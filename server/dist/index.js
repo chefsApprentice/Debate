@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.conn = void 0;
 const path_1 = __importDefault(require("path"));
 const type_graphql_1 = require("type-graphql");
 require("../.env");
@@ -23,20 +24,21 @@ const typeorm_1 = require("typeorm");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const port = process.env.PORT;
+const conn = new typeorm_1.DataSource({
+    type: "postgres",
+    host: "localhost",
+    database: "debate",
+    schema: "debateSchema",
+    logging: true,
+    username: process.env.PG_USERNAME,
+    password: process.env.PG_PASSWORD,
+    synchronize: true,
+    migrations: [path_1.default.join(__dirname, "./migrations/.{js,ts}*")],
+    entities: [path_1.default.join(__dirname, "./entities/.{js,ts}*")],
+});
+exports.conn = conn;
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("pass", process.env.PG_PASSWORD);
-    const conn = yield (0, typeorm_1.createConnection)({
-        type: "postgres",
-        host: "localhost",
-        database: "debate",
-        url: process.env.DATABASE_URL,
-        logging: process.env.NODE_ENV !== "production",
-        username: process.env.PG_USERNAME,
-        password: process.env.PG_PASSWORD,
-        synchronize: true,
-        migrations: [path_1.default.join(__dirname, "./migrations/.{js,ts}*")],
-        entities: [path_1.default.join(__dirname, "./entities/.{js,ts}*")],
-    });
+    yield conn.initialize().then(() => console.log("conn init"));
     yield conn.runMigrations();
     const app = (0, express_1.default)();
     app.use((0, cors_1.default)({

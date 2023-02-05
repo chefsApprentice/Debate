@@ -7,28 +7,30 @@ import { MyContext } from "./types";
 import cors from "cors";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
-import { createConnection } from "typeorm";
+import { DataSource } from "typeorm";
 import dotenv from "dotenv";
 dotenv.config();
 
 const port = process.env.PORT;
 
-const main = async () => {
-  console.log("pass", process.env.PG_PASSWORD);
-  const conn = await createConnection({
-    type: "postgres",
-    host: "localhost",
-    database: "debate",
-    url: process.env.DATABASE_URL,
-    logging: process.env.NODE_ENV !== "production",
-    username: <string>process.env.PG_USERNAME!,
-    password: <string>process.env.PG_PASSWORD!,
-    synchronize: true,
-    migrations: [path.join(__dirname, "./migrations/.{js,ts}*")],
-    entities: [path.join(__dirname, "./entities/.{js,ts}*")],
-  });
+// const main = async () => {
+const conn = new DataSource({
+  type: "postgres",
+  host: "localhost",
+  database: "debate",
+  schema: "debateSchema",
+  // url: "localhost:5432",
+  logging: true,
+  username: <string>process.env.PG_USERNAME!,
+  password: <string>process.env.PG_PASSWORD!,
+  synchronize: true,
+  migrations: [path.join(__dirname, "./migrations/.{js,ts}*")],
+  entities: [path.join(__dirname, "./entities/.{js,ts}*")],
+});
+export { conn };
 
-  // conn.initialize().then(() => console.log("conn initiitex"));
+const main = async () => {
+  await conn.initialize().then(() => console.log("conn init"));
   // console.log("buh");
 
   await conn.runMigrations();

@@ -23,6 +23,10 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email!: string;
 
+  @Field()
+  @Column()
+  token: string;
+
   //no field property, so graphql cannot select it
   @Column()
   password!: string;
