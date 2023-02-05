@@ -22,6 +22,7 @@ const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
 const typeorm_1 = require("typeorm");
 const dotenv_1 = __importDefault(require("dotenv"));
+const User_1 = require("./entities/User");
 dotenv_1.default.config();
 const port = process.env.PORT;
 const conn = new typeorm_1.DataSource({
@@ -31,10 +32,10 @@ const conn = new typeorm_1.DataSource({
     schema: "debateSchema",
     logging: true,
     username: process.env.PG_USERNAME,
-    password: process.env.PG_PASSWORD,
+    password: "123456Dog!",
     synchronize: true,
     migrations: [path_1.default.join(__dirname, "./migrations/.{js,ts}*")],
-    entities: [path_1.default.join(__dirname, "./entities/.{js,ts}*")],
+    entities: [User_1.User],
 });
 exports.conn = conn;
 const main = () => __awaiter(void 0, void 0, void 0, function* () {

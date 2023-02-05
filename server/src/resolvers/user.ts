@@ -49,7 +49,6 @@ class userResponse {
 export class UserResolver {
   @Query(() => String)
   hello() {
-    console.log("nani");
     return "bye";
   }
 
@@ -58,15 +57,14 @@ export class UserResolver {
     @Arg("inputs") inputs: registerInput
     // @Ctx() { req }: MyContext
   ): Promise<userResponse> {
-    console.log("decorum");
     let errors = validateRegister(inputs);
-    console.log("errors:", errors);
     if (errors.length != 0) {
       return { errors };
     }
-    console.log("we must be hanigng");
     //unlike validating the register this is not repettive so should stay in the main func
-    let user = await User.findOne({ where: { username: inputs.username } });
+    let user = await conn.manager.findOneBy(User, {
+      username: inputs.username,
+    });
     if (user) {
       return {
         errors: [
@@ -77,7 +75,9 @@ export class UserResolver {
         ],
       };
     }
-    user = await User.findOne({ where: { email: inputs.email } });
+    user = await conn.manager.findOneBy(User, {
+      email: inputs.email,
+    });
     if (user) {
       return {
         errors: [
@@ -89,10 +89,8 @@ export class UserResolver {
       };
     }
 
-    console.log(1);
     const hashedPassword = await bcrypt.hash(inputs.password, 10);
 
-    console.log(2);
     const token = await jwt.sign(
       { username: inputs.username },
       <string>process.env.HASH_JWT,
@@ -100,7 +98,6 @@ export class UserResolver {
         expiresIn: "14d",
       }
     );
-    console.log(3);
     // const result = await User.insert({
     //   email: inputs.email,
     //   username: inputs.username,
@@ -116,7 +113,6 @@ export class UserResolver {
 
     await conn.manager.save(newUser);
 
-    console.log(4);
     // const result = await getConnection()
     //   .createQueryBuilder()
     //   .insert()
@@ -129,9 +125,7 @@ export class UserResolver {
     //   })
     //   .execute();
 
-    console.log("wtf");
-    console.log("newUser id", newUser.id);
-    return { user: user! };
+    return { user: newUser! };
 
     // req.session.userId = user.id;
     // req.session.save();

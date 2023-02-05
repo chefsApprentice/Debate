@@ -85,19 +85,17 @@ userResponse = __decorate([
 ], userResponse);
 class UserResolver {
     hello() {
-        console.log("nani");
         return "bye";
     }
     register(inputs) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("decorum");
             let errors = (0, validateRegister_1.validateRegister)(inputs);
-            console.log("errors:", errors);
             if (errors.length != 0) {
                 return { errors };
             }
-            console.log("we must be hanigng");
-            let user = yield User_1.User.findOne({ where: { username: inputs.username } });
+            let user = yield index_1.conn.manager.findOneBy(User_1.User, {
+                username: inputs.username,
+            });
             if (user) {
                 return {
                     errors: [
@@ -108,7 +106,9 @@ class UserResolver {
                     ],
                 };
             }
-            user = yield User_1.User.findOne({ where: { email: inputs.email } });
+            user = yield index_1.conn.manager.findOneBy(User_1.User, {
+                email: inputs.email,
+            });
             if (user) {
                 return {
                     errors: [
@@ -119,23 +119,17 @@ class UserResolver {
                     ],
                 };
             }
-            console.log(1);
             const hashedPassword = yield bcrypt_1.default.hash(inputs.password, 10);
-            console.log(2);
             const token = yield jsonwebtoken_1.default.sign({ username: inputs.username }, process.env.HASH_JWT, {
                 expiresIn: "14d",
             });
-            console.log(3);
             const newUser = new User_1.User();
             newUser.email = inputs.email;
             newUser.username = inputs.username;
             newUser.password = hashedPassword;
             newUser.token = token;
             yield index_1.conn.manager.save(newUser);
-            console.log(4);
-            console.log("wtf");
-            console.log("newUser id", newUser.id);
-            return { user: user };
+            return { user: newUser };
         });
     }
 }
