@@ -1,4 +1,5 @@
 import { ObjectType, Field } from "type-graphql";
+// import { ObjectType, Field } from "type-graphql";
 import {
   Entity,
   BaseEntity,
@@ -6,7 +7,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { Post } from "./Post";
 
 @ObjectType()
 @Entity()
@@ -30,6 +33,10 @@ export class User extends BaseEntity {
   //no field property, so graphql cannot select it
   @Column()
   password!: string;
+
+  @Field()
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 
   @Field(() => String)
   @CreateDateColumn()

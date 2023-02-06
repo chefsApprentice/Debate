@@ -1,7 +1,7 @@
 import { FieldError } from "../types";
 import { registerInput } from "../resolvers/user";
 
-export let validateRegister = (inputs: registerInput): FieldError[] => {
+export let validateRegistration = (inputs: registerInput): FieldError[] => {
   let errors = [];
   if (inputs.username.trim().length < 8) {
     errors.push({

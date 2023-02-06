@@ -1,8 +1,9 @@
 import { User } from "../entities/User";
 // import { FieldError, MyContext } from "../types";
-import { FieldError } from "../types";
+import { FieldError, MyContext } from "../types";
 import {
   Arg,
+  Ctx,
   // Ctx,
   Field,
   InputType,
@@ -11,7 +12,7 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { validateRegister } from "../utils/validateRegister";
+import { validateRegistration } from "../utils/validateRegistration";
 import "../../.env";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -52,12 +53,19 @@ export class UserResolver {
     return "bye";
   }
 
+  // only for development
+  @Query(() => [User])
+  async getUsers() {
+    let users = await conn.manager.find(User);
+    return users;
+  }
+
   @Mutation(() => userResponse)
   async register(
-    @Arg("inputs") inputs: registerInput
-    // @Ctx() { req }: MyContext
+    @Arg("inputs") inputs: registerInput,
+    @Ctx() { res }: MyContext
   ): Promise<userResponse> {
-    let errors = validateRegister(inputs);
+    let errors = validateRegistration(inputs);
     if (errors.length != 0) {
       return { errors };
     }
@@ -98,6 +106,11 @@ export class UserResolver {
         expiresIn: "14d",
       }
     );
+    res.cookie("uid", token, {
+      maxAge: 14 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
     // const result = await User.insert({
     //   email: inputs.email,
     //   username: inputs.username,
@@ -113,23 +126,57 @@ export class UserResolver {
 
     await conn.manager.save(newUser);
 
-    // const result = await getConnection()
-    //   .createQueryBuilder()
-    //   .insert()
-    //   .into(User)
-    //   .values({
-    //     email: inputs.email,
-    //     username: inputs.username,
-    //     password: hashedPassword,
-    //     token: token,
-    //   })
-    //   .execute();
-
     return { user: newUser! };
 
     // req.session.userId = user.id;
     // req.session.save();
 
     // hash password and create an account
+  }
+
+  @Mutation(() => userResponse)
+  async login(
+    @Arg("inputs") inputs: loginInput,
+    @Ctx() { res }: MyContext
+  ): Promise<userResponse> {
+    // let errors = validateLogin(inputs);
+
+    let user = await conn.manager.findOneBy(
+      User,
+      inputs.usernameOrEmail.includes("@")
+        ? { email: inputs.usernameOrEmail }
+        : { username: inputs.usernameOrEmail }
+    );
+
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: "usernameOrEmail",
+            error: "Usert not found!",
+          },
+        ],
+      };
+    }
+    const token = await jwt.sign(
+      { userId: user.id },
+      <string>process.env.HASH_JWT,
+      {
+        expiresIn: "14d",
+      }
+    );
+
+    if (await bcrypt.compare(inputs.password, user.password)) {
+      res.cookie("uid", token, {
+        maxAge: 14 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+    } else {
+      return {
+        errors: [{ field: "password", error: "Passwords do not match" }],
+      };
+    }
+    user.token = token;
+    return { user };
   }
 }
