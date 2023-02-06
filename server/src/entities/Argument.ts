@@ -4,11 +4,11 @@ import {
   Column,
   Entity,
   ManyToOne,
-  OneToMany,
+  // OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Post } from "./Post";
-import { User } from "../resolvers/User";
+import { User } from "./User";
 
 @ObjectType()
 @Entity()
@@ -29,7 +29,15 @@ export class Argument extends BaseEntity {
   @Column()
   title!: string;
 
-  @Field()
-  @Column()
+  @Field(() => [String])
+  @Column("text", { array: true })
   points: string[];
+
+  @Field(() => [Number])
+  @Column("int", { array: true })
+  referencedBy: number[];
+
+  @Field(() => [Number])
+  @Column("int", { array: true })
+  References: number[];
 }

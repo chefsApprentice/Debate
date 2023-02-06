@@ -179,4 +179,25 @@ export class UserResolver {
     user.token = token;
     return { user };
   }
+
+  @Query(() => userResponse)
+  async autoLogin(@Ctx() { req }: MyContext): Promise<userResponse> {
+    // add a try catch on allah
+    let token = req.headers["authorization"];
+    console.log("headers:", token);
+    // token = token?.split(" ")[1];
+    let userid = <number>(<unknown>jwt.verify(token!, process.env.HASH_JWT!));
+    let user = await conn.manager.findOneBy(User, { id: userid });
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: "token",
+            error: "No user",
+          },
+        ],
+      };
+    }
+    return { user };
+  }
 }

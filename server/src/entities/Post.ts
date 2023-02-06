@@ -21,7 +21,7 @@ export class Post extends BaseEntity {
   @ManyToOne(() => User, (user) => user.posts)
   user!: User;
 
-  @Field()
+  @Field(() => [Argument])
   @OneToMany(() => Argument, (argument) => argument.post)
   arguments: Argument[];
 

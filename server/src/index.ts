@@ -7,8 +7,11 @@ import cors from "cors";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { DataSource } from "typeorm";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { User } from "./entities/User";
+import { Post } from "./entities/Post";
+import { Argument } from "./entities/Argument";
 dotenv.config();
 
 const port = process.env.PORT;
@@ -27,7 +30,7 @@ const conn = new DataSource({
   synchronize: true,
   migrations: [path.join(__dirname, "./migrations/.{js,ts}*")],
   // entities: [path.join(__dirname, "./entities/.{js,ts}*")],
-  entities: [User],
+  entities: [User, Post, Argument],
 });
 export { conn };
 
@@ -45,6 +48,8 @@ const main = async () => {
       credentials: true,
     })
   );
+
+  app.use(cookieParser());
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
