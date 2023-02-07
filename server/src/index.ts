@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import { User } from "./entities/User";
 import { Post } from "./entities/Post";
 import { Argument } from "./entities/Argument";
+import { PostResolver } from "./resolvers/post";
 dotenv.config();
 
 const port = process.env.PORT;
@@ -54,7 +55,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, PostResolver],
       validate: true,
     }),
     context: ({ req, res }: MyContext) => ({

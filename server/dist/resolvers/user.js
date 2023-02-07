@@ -166,7 +166,7 @@ class UserResolver {
                     errors: [
                         {
                             field: "usernameOrEmail",
-                            error: "Usert not found!",
+                            error: "User not found!",
                         },
                     ],
                 };
