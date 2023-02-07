@@ -47,6 +47,14 @@ class userResponse {
   user?: User;
 }
 
+@ObjectType()
+class logoutResponse {
+  @Field(() => FieldError, { nullable: true })
+  error?: FieldError;
+  @Field(() => Boolean)
+  success!: Boolean;
+}
+
 export class UserResolver {
   @Query(() => String)
   hello() {
@@ -109,6 +117,8 @@ export class UserResolver {
     res.cookie("uid", token, {
       maxAge: 14 * 24 * 60 * 60 * 1000,
       httpOnly: true,
+      secure: true,
+      sameSite: "none",
     });
 
     // const result = await User.insert({
@@ -122,7 +132,6 @@ export class UserResolver {
     newUser.email = inputs.email;
     newUser.username = inputs.username;
     newUser.password = hashedPassword;
-    newUser.token = token;
 
     await conn.manager.save(newUser);
 
@@ -170,34 +179,44 @@ export class UserResolver {
       res.cookie("uid", token, {
         maxAge: 14 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        secure: true,
+        sameSite: "none",
       });
     } else {
       return {
         errors: [{ field: "password", error: "Passwords do not match" }],
       };
     }
-    user.token = token;
     return { user };
   }
 
   @Query(() => userResponse)
   async autoLogin(@Ctx() { req }: MyContext): Promise<userResponse> {
-    // add a try catch on allah
     let token = req.headers["authorization"];
     console.log("headers:", token);
-    // token = token?.split(" ")[1];
-    let userid = <number>(<unknown>jwt.verify(token!, process.env.HASH_JWT!));
-    let user = await conn.manager.findOneBy(User, { id: userid });
-    if (!user) {
-      return {
-        errors: [
-          {
-            field: "token",
-            error: "No user",
-          },
-        ],
-      };
+    try {
+      let userid = jwt.verify(token!, process.env.HASH_JWT!);
+      console.log("userid", userid);
+      let user = await conn.manager.findOneBy(User, { id: <any>userid });
+      if (!user) {
+        return {
+          errors: [
+            {
+              field: "token",
+              error: "No user",
+            },
+          ],
+        };
+      }
+      return { user };
+    } catch {
+      return { errors: [{ field: "token", error: "Token is invalid" }] };
     }
-    return { user };
+  }
+
+  @Mutation(() => logoutResponse)
+  async logout(@Ctx() { res }: MyContext): Promise<logoutResponse> {
+    res.clearCookie("uid");
+    return { success: true };
   }
 }

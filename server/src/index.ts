@@ -44,7 +44,8 @@ const main = async () => {
 
   app.use(
     cors({
-      origin: process.env.CORS_ORIGIN,
+      // origin: process.env.CORS_ORIGIN,
+      origin: "https://studio.apollographql.com",
       credentials: true,
     })
   );
@@ -66,7 +67,7 @@ const main = async () => {
 
   apolloServer.applyMiddleware({
     app,
-    cors: true,
+    cors: { origin: "https://studio.apollographql.com", credentials: true },
   });
 
   app.listen(parseInt(port!), () => {

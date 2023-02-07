@@ -46,7 +46,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield conn.runMigrations();
     const app = (0, express_1.default)();
     app.use((0, cors_1.default)({
-        origin: process.env.CORS_ORIGIN,
+        origin: "https://studio.apollographql.com",
         credentials: true,
     }));
     app.use((0, cookie_parser_1.default)());
@@ -63,7 +63,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield apolloServer.start();
     apolloServer.applyMiddleware({
         app,
-        cors: true,
+        cors: { origin: "https://studio.apollographql.com", credentials: true },
     });
     app.listen(parseInt(port), () => {
         console.log("server started on localhost:4000");

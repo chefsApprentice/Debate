@@ -83,6 +83,19 @@ __decorate([
 userResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], userResponse);
+let logoutResponse = class logoutResponse {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => types_1.FieldError, { nullable: true }),
+    __metadata("design:type", types_1.FieldError)
+], logoutResponse.prototype, "error", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Boolean),
+    __metadata("design:type", Boolean)
+], logoutResponse.prototype, "success", void 0);
+logoutResponse = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], logoutResponse);
 class UserResolver {
     hello() {
         return "bye";
@@ -132,12 +145,13 @@ class UserResolver {
             res.cookie("uid", token, {
                 maxAge: 14 * 24 * 60 * 60 * 1000,
                 httpOnly: true,
+                secure: true,
+                sameSite: "none",
             });
             const newUser = new User_1.User();
             newUser.email = inputs.email;
             newUser.username = inputs.username;
             newUser.password = hashedPassword;
-            newUser.token = token;
             yield index_1.conn.manager.save(newUser);
             return { user: newUser };
         });
@@ -164,6 +178,8 @@ class UserResolver {
                 res.cookie("uid", token, {
                     maxAge: 14 * 24 * 60 * 60 * 1000,
                     httpOnly: true,
+                    secure: true,
+                    sameSite: "none",
                 });
             }
             else {
@@ -171,7 +187,6 @@ class UserResolver {
                     errors: [{ field: "password", error: "Passwords do not match" }],
                 };
             }
-            user.token = token;
             return { user };
         });
     }
@@ -179,19 +194,31 @@ class UserResolver {
         return __awaiter(this, void 0, void 0, function* () {
             let token = req.headers["authorization"];
             console.log("headers:", token);
-            let userid = jsonwebtoken_1.default.verify(token, process.env.HASH_JWT);
-            let user = yield index_1.conn.manager.findOneBy(User_1.User, { id: userid });
-            if (!user) {
-                return {
-                    errors: [
-                        {
-                            field: "token",
-                            error: "No user",
-                        },
-                    ],
-                };
+            try {
+                let userid = jsonwebtoken_1.default.verify(token, process.env.HASH_JWT);
+                console.log("userid", userid);
+                let user = yield index_1.conn.manager.findOneBy(User_1.User, { id: userid });
+                if (!user) {
+                    return {
+                        errors: [
+                            {
+                                field: "token",
+                                error: "No user",
+                            },
+                        ],
+                    };
+                }
+                return { user };
             }
-            return { user };
+            catch (_a) {
+                return { errors: [{ field: "token", error: "Token is invalid" }] };
+            }
+        });
+    }
+    logout({ res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            res.clearCookie("uid");
+            return { success: true };
         });
     }
 }
@@ -230,5 +257,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "autoLogin", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => logoutResponse),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "logout", null);
 exports.UserResolver = UserResolver;
 //# sourceMappingURL=user.js.map
