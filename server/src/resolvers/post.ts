@@ -13,16 +13,17 @@ import { Post } from "../entities/Post";
 import { FieldError, MyContext } from "../types";
 import { verifyUser } from "../utils/verifyUser";
 import { User } from "../entities/User";
+import { orderSwitch, outputTopics } from "../utils/paginated Utils";
 
 @Resolver(Post)
 @InputType()
 class postsInput {
   @Field(() => [String], { nullable: true })
-  topic?: string[];
+  topics?: string[];
   @Field()
   scrolledDown: number;
-  @Field()
-  sortBy: string;
+  @Field(() => [String])
+  sortBy: string[];
 }
 
 @InputType()
@@ -78,6 +79,8 @@ export class PostResolver {
       {
         skip,
         take: selectionAmount,
+        where: outputTopics(inputs.topics!),
+        order: orderSwitch(inputs.sortBy[0], inputs.sortBy[1]),
       }
     );
     return {
