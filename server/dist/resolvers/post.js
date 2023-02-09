@@ -92,7 +92,12 @@ aPostResponse = __decorate([
 class PostResolver {
     getPosts() {
         return __awaiter(this, void 0, void 0, function* () {
-            let posts = yield index_1.conn.manager.find(Post_1.Post);
+            const postRepo = index_1.conn.getRepository(Post_1.Post);
+            const posts = yield postRepo.find({
+                relations: {
+                    user: true,
+                },
+            });
             return posts;
         });
     }
@@ -104,7 +109,6 @@ class PostResolver {
                 skip,
                 take: selectionAmount,
             });
-            console.log("psots", posts, total);
             return {
                 errors: [
                     { field: "No error", error: "check console . log please baebs" },
@@ -118,15 +122,11 @@ class PostResolver {
             if (!req.headers["authorization"]) {
                 return { errors: [{ field: "user", error: "User not logged in" }] };
             }
-            console.log("2222222222222222222222222222");
             let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
-            console.log("Users erros:", user.errors);
             console.log((_a = user.errors) === null || _a === void 0 ? void 0 : _a.length);
             if (typeof user.errors == undefined) {
-                console.log("what");
                 return { errors: user.errors };
             }
-            console.log("11111111111111111111111111111111111");
             let newPost = new Post_1.Post();
             newPost.title = inputs.title;
             newPost.description = inputs.description;
@@ -134,7 +134,6 @@ class PostResolver {
             newPost.ranking = 0;
             newPost.user = user.user;
             let post = yield index_1.conn.manager.save(Post_1.Post, newPost);
-            console.log("post_________________:", post);
             (_c = (_b = user.user) === null || _b === void 0 ? void 0 : _b.posts) === null || _c === void 0 ? void 0 : _c.push(post);
             yield index_1.conn.manager.save(User_1.User, user.user);
             return { post: newPost };
