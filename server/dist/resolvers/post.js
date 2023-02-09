@@ -36,10 +36,31 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", Number)
 ], postsInput.prototype, "scrolledDown", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], postsInput.prototype, "sortBy", void 0);
 postsInput = __decorate([
     (0, type_graphql_1.Resolver)(Post_1.Post),
     (0, type_graphql_1.InputType)()
 ], postsInput);
+let createPostInput = class createPostInput {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], createPostInput.prototype, "topic", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], createPostInput.prototype, "title", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], createPostInput.prototype, "description", void 0);
+createPostInput = __decorate([
+    (0, type_graphql_1.InputType)()
+], createPostInput);
 let postsResponse = class postsResponse {
 };
 __decorate([
@@ -53,6 +74,19 @@ __decorate([
 postsResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], postsResponse);
+let aPostResponse = class aPostResponse {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => [types_1.FieldError], { nullable: true }),
+    __metadata("design:type", Array)
+], aPostResponse.prototype, "errors", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Post_1.Post, { nullable: true }),
+    __metadata("design:type", Post_1.Post)
+], aPostResponse.prototype, "post", void 0);
+aPostResponse = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], aPostResponse);
 class PostResolver {
     getPosts() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -63,11 +97,17 @@ class PostResolver {
     paginatedPosts(inputs, { res }) {
         return __awaiter(this, void 0, void 0, function* () {
             const selectionAmount = 25;
-            let posts = yield index_1.conn.manager.find(Post_1.Post, {
+            let skip = (inputs.scrolledDown - 1) * selectionAmount;
+            let [posts, total] = yield index_1.conn.manager.findAndCount(Post_1.Post, {
+                skip,
                 take: selectionAmount,
             });
-            console.log("psots", posts);
-            return { errors: [{ field: "No error", error: posts }] };
+            console.log("psots", posts, total);
+            return {
+                errors: [
+                    { field: "No error", error: "check console . log please baebs" },
+                ],
+            };
         });
     }
 }

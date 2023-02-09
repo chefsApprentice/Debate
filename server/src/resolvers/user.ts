@@ -14,7 +14,7 @@ import {
 } from "type-graphql";
 import { validateRegistration } from "../utils/validateRegistration";
 import "../../.env";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { conn } from "../index";
 
@@ -195,9 +195,13 @@ export class UserResolver {
     let token = req.headers["authorization"];
     console.log("headers:", token);
     try {
-      let userid = jwt.verify(token!, process.env.HASH_JWT!);
+      let userid: JwtPayload = <JwtPayload>(
+        jwt.verify(token!, process.env.HASH_JWT!)
+      );
       console.log("userid", userid);
-      let user = await conn.manager.findOneBy(User, { id: <any>userid });
+      let user = await conn.manager.findOneBy(User, {
+        id: userid.userId!,
+      });
       if (!user) {
         return {
           errors: [

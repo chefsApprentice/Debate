@@ -63,12 +63,14 @@ export class PostResolver {
   ): Promise<postsResponse> {
     const selectionAmount = 25;
     let skip = (inputs.scrolledDown - 1) * selectionAmount;
-    let [posts, total]: Post[],
-      number = await conn.manager.findAndCount(Post, {
+    let [posts, total]: [Post[], number] = await conn.manager.findAndCount(
+      Post,
+      {
         skip,
         take: selectionAmount,
-      });
-    console.log("psots", posts!);
+      }
+    );
+    console.log("psots", posts!, total);
     return {
       errors: [
         { field: "No error", error: "check console . log please baebs" },
@@ -76,29 +78,29 @@ export class PostResolver {
     };
   }
 
-  @Mutation(() => aPostResponse)
-  async createPost(
-    @Arg("inputs") inputs: createPostInput,
-    @Ctx() { req }: MyContext
-  ): Promise<aPostResponse> {
-    // Maybe do some checks on the form data.
+  // @Mutation(() => aPostResponse)
+  // async createPost(
+  //   @Arg("inputs") inputs: createPostInput,
+  //   @Ctx() { req }: MyContext
+  // ): Promise<aPostResponse> {
+  //   // Maybe do some checks on the form data.
 
-    // U nered login to work so u can fucking log in
-    // let user =
-    console.log("req headers be like:", req.headers["authorization"]);
-    if (false) {
-      return { errors: [{ field: "user", error: "User not logged in." }] };
-    }
+  //   // U nered login to work so u can fucking log in
+  //   // let user =
+  //   console.log("req headers be like:", req.headers["authorization"]);
+  //   if (false) {
+  //     return { errors: [{ field: "user", error: "User not logged in." }] };
+  //   }
 
-    let newPost = new Post();
-    newPost.title = inputs.title;
-    newPost.description = inputs.description;
-    newPost.topic = inputs.topic;
+  //   let newPost = new Post();
+  //   newPost.title = inputs.title;
+  //   newPost.description = inputs.description;
+  //   newPost.topic = inputs.topic;
 
-    await conn
-      .createQueryBuilder()
-      .relation(Post, "user")
-      .of(newPost)
-      .add(user);
-  }
+  //   await conn
+  //     .createQueryBuilder()
+  //     .relation(Post, "user")
+  //     .of(newPost)
+  //     .add(user);
+  // }
 }

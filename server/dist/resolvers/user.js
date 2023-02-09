@@ -195,9 +195,11 @@ class UserResolver {
             let token = req.headers["authorization"];
             console.log("headers:", token);
             try {
-                let userid = jsonwebtoken_1.default.verify(token, process.env.HASH_JWT);
+                let userid = (jsonwebtoken_1.default.verify(token, process.env.HASH_JWT));
                 console.log("userid", userid);
-                let user = yield index_1.conn.manager.findOneBy(User_1.User, { id: userid });
+                let user = yield index_1.conn.manager.findOneBy(User_1.User, {
+                    id: userid.userId,
+                });
                 if (!user) {
                     return {
                         errors: [
