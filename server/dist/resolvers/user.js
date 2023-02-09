@@ -24,7 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserResolver = exports.registerInput = exports.loginInput = void 0;
+exports.UserResolver = exports.userResponse = exports.registerInput = exports.loginInput = void 0;
 const User_1 = require("../entities/User");
 const types_1 = require("../types");
 const type_graphql_1 = require("type-graphql");
@@ -33,6 +33,7 @@ require("../../.env");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const index_1 = require("../index");
+const verifyUser_1 = require("../utils/verifyUser");
 let loginInput = class loginInput {
 };
 __decorate([
@@ -83,6 +84,7 @@ __decorate([
 userResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], userResponse);
+exports.userResponse = userResponse;
 let logoutResponse = class logoutResponse {
 };
 __decorate([
@@ -193,28 +195,7 @@ class UserResolver {
     autoLogin({ req }) {
         return __awaiter(this, void 0, void 0, function* () {
             let token = req.headers["authorization"];
-            console.log("headers:", token);
-            try {
-                let userid = (jsonwebtoken_1.default.verify(token, process.env.HASH_JWT));
-                console.log("userid", userid);
-                let user = yield index_1.conn.manager.findOneBy(User_1.User, {
-                    id: userid.userId,
-                });
-                if (!user) {
-                    return {
-                        errors: [
-                            {
-                                field: "token",
-                                error: "No user",
-                            },
-                        ],
-                    };
-                }
-                return { user };
-            }
-            catch (_a) {
-                return { errors: [{ field: "token", error: "Token is invalid" }] };
-            }
+            return yield (0, verifyUser_1.verifyUser)(token);
         });
     }
     logout({ res }) {

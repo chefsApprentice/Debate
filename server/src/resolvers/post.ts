@@ -11,6 +11,8 @@ import {
 } from "type-graphql";
 import { Post } from "../entities/Post";
 import { FieldError, MyContext } from "../types";
+import { verifyUser } from "../utils/verifyUser";
+import { User } from "../entities/User";
 
 @Resolver(Post)
 @InputType()
@@ -78,29 +80,37 @@ export class PostResolver {
     };
   }
 
-  // @Mutation(() => aPostResponse)
-  // async createPost(
-  //   @Arg("inputs") inputs: createPostInput,
-  //   @Ctx() { req }: MyContext
-  // ): Promise<aPostResponse> {
-  //   // Maybe do some checks on the form data.
+  @Mutation(() => aPostResponse)
+  async createPost(
+    @Arg("inputs") inputs: createPostInput,
+    @Ctx() { req }: MyContext
+  ): Promise<aPostResponse> {
+    // Maybe do some checks on the form data.
 
-  //   // U nered login to work so u can fucking log in
-  //   // let user =
-  //   console.log("req headers be like:", req.headers["authorization"]);
-  //   if (false) {
-  //     return { errors: [{ field: "user", error: "User not logged in." }] };
-  //   }
+    if (!req.headers["authorization"]) {
+      return { errors: [{ field: "user", error: "User not logged in" }] };
+    }
 
-  //   let newPost = new Post();
-  //   newPost.title = inputs.title;
-  //   newPost.description = inputs.description;
-  //   newPost.topic = inputs.topic;
+    console.log("2222222222222222222222222222");
+    let user = await verifyUser(req.headers["authorization"]!);
+    console.log("Users erros:", user.errors);
+    console.log(user.errors?.length);
+    if (typeof user.errors == undefined) {
+      return { errors: user.errors };
+    }
+    console.log("11111111111111111111111111111111111");
+    let newPost = new Post();
+    newPost.title = inputs.title;
+    newPost.description = inputs.description;
+    newPost.topic = inputs.topic;
+    newPost.ranking = 0;
+    newPost.user = user.user!;
 
-  //   await conn
-  //     .createQueryBuilder()
-  //     .relation(Post, "user")
-  //     .of(newPost)
-  //     .add(user);
-  // }
+    let post = await conn.manager.save(Post, newPost);
+    console.log("post_________________:", post);
+    user.user?.posts?.push(post);
+    await conn.manager.save(User, user.user!);
+
+    return { post: newPost };
+  }
 }

@@ -17,6 +17,7 @@ import "../../.env";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { conn } from "../index";
+import { verifyUser } from "../utils/verifyUser";
 
 @Resolver(User)
 @InputType()
@@ -40,7 +41,7 @@ export class registerInput {
 }
 
 @ObjectType()
-class userResponse {
+export class userResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
   @Field(() => User, { nullable: true })
@@ -193,29 +194,7 @@ export class UserResolver {
   @Query(() => userResponse)
   async autoLogin(@Ctx() { req }: MyContext): Promise<userResponse> {
     let token = req.headers["authorization"];
-    console.log("headers:", token);
-    try {
-      let userid: JwtPayload = <JwtPayload>(
-        jwt.verify(token!, process.env.HASH_JWT!)
-      );
-      console.log("userid", userid);
-      let user = await conn.manager.findOneBy(User, {
-        id: userid.userId!,
-      });
-      if (!user) {
-        return {
-          errors: [
-            {
-              field: "token",
-              error: "No user",
-            },
-          ],
-        };
-      }
-      return { user };
-    } catch {
-      return { errors: [{ field: "token", error: "Token is invalid" }] };
-    }
+    return await verifyUser(token!);
   }
 
   @Mutation(() => logoutResponse)

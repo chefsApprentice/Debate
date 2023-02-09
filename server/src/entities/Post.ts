@@ -23,7 +23,7 @@ export class Post extends BaseEntity {
 
   @Field(() => [Argument])
   @OneToMany(() => Argument, (argument) => argument.post)
-  arguments: Argument[];
+  arguments?: Argument[];
 
   @Field()
   @Column()

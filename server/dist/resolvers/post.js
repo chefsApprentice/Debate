@@ -26,6 +26,8 @@ const index_1 = require("../index");
 const type_graphql_1 = require("type-graphql");
 const Post_1 = require("../entities/Post");
 const types_1 = require("../types");
+const verifyUser_1 = require("../utils/verifyUser");
+const User_1 = require("../entities/User");
 let postsInput = class postsInput {
 };
 __decorate([
@@ -110,6 +112,34 @@ class PostResolver {
             };
         });
     }
+    createPost(inputs, { req }) {
+        var _a, _b, _c;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.headers["authorization"]) {
+                return { errors: [{ field: "user", error: "User not logged in" }] };
+            }
+            console.log("2222222222222222222222222222");
+            let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
+            console.log("Users erros:", user.errors);
+            console.log((_a = user.errors) === null || _a === void 0 ? void 0 : _a.length);
+            if (typeof user.errors == undefined) {
+                console.log("what");
+                return { errors: user.errors };
+            }
+            console.log("11111111111111111111111111111111111");
+            let newPost = new Post_1.Post();
+            newPost.title = inputs.title;
+            newPost.description = inputs.description;
+            newPost.topic = inputs.topic;
+            newPost.ranking = 0;
+            newPost.user = user.user;
+            let post = yield index_1.conn.manager.save(Post_1.Post, newPost);
+            console.log("post_________________:", post);
+            (_c = (_b = user.user) === null || _b === void 0 ? void 0 : _b.posts) === null || _c === void 0 ? void 0 : _c.push(post);
+            yield index_1.conn.manager.save(User_1.User, user.user);
+            return { post: newPost };
+        });
+    }
 }
 __decorate([
     (0, type_graphql_1.Query)(() => [Post_1.Post]),
@@ -125,5 +155,13 @@ __decorate([
     __metadata("design:paramtypes", [postsInput, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "paginatedPosts", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => aPostResponse),
+    __param(0, (0, type_graphql_1.Arg)("inputs")),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [createPostInput, Object]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "createPost", null);
 exports.PostResolver = PostResolver;
 //# sourceMappingURL=post.js.map
