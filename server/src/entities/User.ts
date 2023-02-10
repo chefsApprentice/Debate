@@ -38,6 +38,14 @@ export class User extends BaseEntity {
   @OneToMany(() => Post, (post) => post.user)
   posts?: Post[];
 
+  @Field()
+  @Column()
+  likes?: number[];
+
+  @Field()
+  @Column()
+  dislikes?: number[];
+
   @Field(() => String)
   @CreateDateColumn()
   date_created: Date;

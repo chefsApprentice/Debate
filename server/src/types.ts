@@ -13,3 +13,11 @@ export class FieldError {
   @Field()
   error: string;
 }
+
+@ObjectType()
+export class SuccessFieldResponse {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+  @Field()
+  success!: boolean;
+}

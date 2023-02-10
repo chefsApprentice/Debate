@@ -10,7 +10,7 @@ import {
   Resolver,
 } from "type-graphql";
 import { Post } from "../entities/Post";
-import { FieldError, MyContext } from "../types";
+import { FieldError, MyContext, SuccessFieldResponse } from "../types";
 import { verifyUser } from "../utils/verifyUser";
 import { User } from "../entities/User";
 import { orderSwitch, outputTopics } from "../utils/paginated Utils";
@@ -27,6 +27,13 @@ class postsInput {
   sortBy: string[];
 }
 
+@InputType()
+class rateInput {
+  @Field()
+  postId!: number;
+  @Field()
+  direction!: string;
+}
 @InputType()
 class createPostInput {
   @Field()
@@ -78,16 +85,20 @@ export class PostResolver {
     const selectionAmount = 25;
     let skip = inputs.scrolledDown * selectionAmount;
     const postRepo = conn.getRepository(Post);
-    const [posts, __]: [Post[], number] = await postRepo.findAndCount({
+
+    let repoVar: any = {
       skip,
       take: selectionAmount,
-      where: outputTopics(inputs.topics!),
       order: <FindOptionsOrder<Post>>order!,
       relations: {
         user: true,
       },
-    });
-    console.log("posts:", posts);
+    };
+
+    typeof inputs.topics !== undefined &&
+      (repoVar.where = outputTopics(inputs.topics!));
+
+    const [posts, __]: [Post[], number] = await postRepo.findAndCount(repoVar);
     return {
       posts: posts!,
     };
@@ -106,7 +117,6 @@ export class PostResolver {
     }
 
     let user = await verifyUser(req.headers["authorization"]!);
-    console.log(user.errors?.length);
     if (typeof user.errors == undefined) {
       return { errors: user.errors };
     }
@@ -122,5 +132,63 @@ export class PostResolver {
     await conn.manager.save(User, user.user!);
 
     return { post: newPost };
+  }
+
+  @Mutation(() => SuccessFieldResponse)
+  async ratePost(
+    @Arg("inputs") inputs: rateInput,
+    @Ctx() { req }: MyContext
+  ): Promise<SuccessFieldResponse> {
+    if (!req.headers["authorization"]) {
+      return {
+        errors: [{ field: "user", error: "User not logged in" }],
+        success: false,
+      };
+    }
+
+    let user = await verifyUser(req.headers["authorization"]!);
+    // I think we need yo update verify suer to include the undeifned case so taht way we still get errors
+    if (typeof user.errors == undefined) {
+      return { errors: user.errors, success: false };
+    }
+
+    let post = await conn.manager.findOne(Post, {
+      where: { id: inputs.postId },
+    });
+    if (!post) {
+      return {
+        errors: [{ field: "post_id", error: "Post doesn't exist" }],
+        success: false,
+      };
+    }
+
+    let dir = 0;
+    if (inputs.direction == "up") {
+      dir += 1;
+      // not scaleable
+      if (user.user?.likes?.find((e) => e == inputs.postId) != undefined) {
+        return {
+          errors: [
+            { field: "direction", error: "You have already liked this post." },
+          ],
+          success: false,
+        };
+      }
+      user.user?.likes?.push(inputs.postId);
+    } else if (inputs.direction == "down") {
+      dir -= 1;
+      user.user?.dislikes?.push(inputs.postId);
+    } else {
+      return {
+        errors: [{ field: "direction", error: "Invalid direction" }],
+        success: false,
+      };
+    }
+    await conn.manager.save(User, user.user!);
+    post.ranking += dir;
+    await conn.manager.save(Post, post);
+    return {
+      success: true,
+    };
   }
 }

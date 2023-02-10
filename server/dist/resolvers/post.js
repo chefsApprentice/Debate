@@ -47,6 +47,19 @@ postsInput = __decorate([
     (0, type_graphql_1.Resolver)(Post_1.Post),
     (0, type_graphql_1.InputType)()
 ], postsInput);
+let rateInput = class rateInput {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], rateInput.prototype, "postId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], rateInput.prototype, "direction", void 0);
+rateInput = __decorate([
+    (0, type_graphql_1.InputType)()
+], rateInput);
 let createPostInput = class createPostInput {
 };
 __decorate([
@@ -127,13 +140,12 @@ class PostResolver {
         });
     }
     createPost(inputs, { req }) {
-        var _a, _b, _c;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.headers["authorization"]) {
                 return { errors: [{ field: "user", error: "User not logged in" }] };
             }
             let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
-            console.log((_a = user.errors) === null || _a === void 0 ? void 0 : _a.length);
             if (typeof user.errors == undefined) {
                 return { errors: user.errors };
             }
@@ -144,9 +156,44 @@ class PostResolver {
             newPost.ranking = 0;
             newPost.user = user.user;
             let post = yield index_1.conn.manager.save(Post_1.Post, newPost);
-            (_c = (_b = user.user) === null || _b === void 0 ? void 0 : _b.posts) === null || _c === void 0 ? void 0 : _c.push(post);
+            (_b = (_a = user.user) === null || _a === void 0 ? void 0 : _a.posts) === null || _b === void 0 ? void 0 : _b.push(post);
             yield index_1.conn.manager.save(User_1.User, user.user);
             return { post: newPost };
+        });
+    }
+    ratePost(inputs, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
+            if (typeof user.errors == undefined) {
+                return { errors: user.errors, success: false };
+            }
+            let dir = 0;
+            if (inputs.direction == "up") {
+                dir += 1;
+            }
+            else if (inputs.direction == "down") {
+                dir -= 1;
+            }
+            else {
+                return {
+                    errors: [{ field: "direction", error: "Invalid direction" }],
+                    success: false,
+                };
+            }
+            let post = yield index_1.conn.manager.findOne(Post_1.Post, {
+                where: { id: inputs.postId },
+            });
+            if (!post) {
+                return {
+                    errors: [{ field: "post_id", error: "Post doesn't exist" }],
+                    success: false,
+                };
+            }
+            post.ranking += dir;
+            yield index_1.conn.manager.save(Post_1.Post, post);
+            return {
+                success: true,
+            };
         });
     }
 }
@@ -172,5 +219,13 @@ __decorate([
     __metadata("design:paramtypes", [createPostInput, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => types_1.SuccessFieldResponse),
+    __param(0, (0, type_graphql_1.Arg)("inputs")),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [rateInput, Object]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "ratePost", null);
 exports.PostResolver = PostResolver;
 //# sourceMappingURL=post.js.map

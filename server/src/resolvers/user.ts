@@ -133,6 +133,8 @@ export class UserResolver {
     newUser.email = inputs.email;
     newUser.username = inputs.username;
     newUser.password = hashedPassword;
+    newUser.likes = [];
+    newUser.dislikes = [];
 
     await conn.manager.save(newUser);
 

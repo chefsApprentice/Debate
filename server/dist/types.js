@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FieldError = void 0;
+exports.SuccessFieldResponse = exports.FieldError = void 0;
 const type_graphql_1 = require("type-graphql");
 let FieldError = class FieldError {
 };
@@ -25,4 +25,18 @@ FieldError = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], FieldError);
 exports.FieldError = FieldError;
+let SuccessFieldResponse = class SuccessFieldResponse {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => [FieldError], { nullable: true }),
+    __metadata("design:type", Array)
+], SuccessFieldResponse.prototype, "errors", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], SuccessFieldResponse.prototype, "success", void 0);
+SuccessFieldResponse = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], SuccessFieldResponse);
+exports.SuccessFieldResponse = SuccessFieldResponse;
 //# sourceMappingURL=types.js.map
