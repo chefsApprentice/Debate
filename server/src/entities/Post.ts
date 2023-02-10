@@ -2,10 +2,12 @@ import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Argument } from "./Argument";
 import { User } from "./User";
@@ -40,4 +42,12 @@ export class Post extends BaseEntity {
   @Field()
   @Column()
   ranking: number;
+
+  @Field(() => String)
+  @CreateDateColumn()
+  date_created: Date;
+
+  @Field(() => String)
+  @UpdateDateColumn()
+  last_modified: Date;
 }

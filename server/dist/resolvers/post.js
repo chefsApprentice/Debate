@@ -28,19 +28,20 @@ const Post_1 = require("../entities/Post");
 const types_1 = require("../types");
 const verifyUser_1 = require("../utils/verifyUser");
 const User_1 = require("../entities/User");
+const paginated_Utils_1 = require("../utils/paginated Utils");
 let postsInput = class postsInput {
 };
 __decorate([
     (0, type_graphql_1.Field)(() => [String], { nullable: true }),
     __metadata("design:type", Array)
-], postsInput.prototype, "topic", void 0);
+], postsInput.prototype, "topics", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", Number)
 ], postsInput.prototype, "scrolledDown", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
+    (0, type_graphql_1.Field)(() => [String]),
+    __metadata("design:type", Array)
 ], postsInput.prototype, "sortBy", void 0);
 postsInput = __decorate([
     (0, type_graphql_1.Resolver)(Post_1.Post),
@@ -103,16 +104,25 @@ class PostResolver {
     }
     paginatedPosts(inputs, { res }) {
         return __awaiter(this, void 0, void 0, function* () {
+            let order = (0, paginated_Utils_1.orderSwitch)(inputs.sortBy[0], inputs.sortBy[1]);
+            if (order === null || order === void 0 ? void 0 : order.error) {
+                return { errors: [order] };
+            }
             const selectionAmount = 25;
-            let skip = (inputs.scrolledDown - 1) * selectionAmount;
-            let [posts, total] = yield index_1.conn.manager.findAndCount(Post_1.Post, {
+            let skip = inputs.scrolledDown * selectionAmount;
+            const postRepo = index_1.conn.getRepository(Post_1.Post);
+            const [posts, __] = yield postRepo.findAndCount({
                 skip,
                 take: selectionAmount,
+                where: (0, paginated_Utils_1.outputTopics)(inputs.topics),
+                order: order,
+                relations: {
+                    user: true,
+                },
             });
+            console.log("posts:", posts);
             return {
-                errors: [
-                    { field: "No error", error: "check console . log please baebs" },
-                ],
+                posts: posts,
             };
         });
     }

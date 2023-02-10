@@ -14,6 +14,7 @@ import { FieldError, MyContext } from "../types";
 import { verifyUser } from "../utils/verifyUser";
 import { User } from "../entities/User";
 import { orderSwitch, outputTopics } from "../utils/paginated Utils";
+import { FindOptionsOrder } from "typeorm";
 
 @Resolver(Post)
 @InputType()
@@ -41,7 +42,7 @@ class postsResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
   @Field(() => [Post], { nullable: true })
-  posts?: [Post];
+  posts?: Post[];
 }
 
 @ObjectType()
@@ -70,23 +71,25 @@ export class PostResolver {
     @Arg("inputs") inputs: postsInput,
     @Ctx() { res }: MyContext
   ): Promise<postsResponse> {
-    // i aint dont this yet
-
+    let order = orderSwitch(inputs.sortBy[0], inputs.sortBy[1]);
+    if (order?.error) {
+      return { errors: [order] };
+    }
     const selectionAmount = 25;
-    let skip = (inputs.scrolledDown - 1) * selectionAmount;
-    let [posts, total]: [Post[], number] = await conn.manager.findAndCount(
-      Post,
-      {
-        skip,
-        take: selectionAmount,
-        where: outputTopics(inputs.topics!),
-        order: orderSwitch(inputs.sortBy[0], inputs.sortBy[1]),
-      }
-    );
+    let skip = inputs.scrolledDown * selectionAmount;
+    const postRepo = conn.getRepository(Post);
+    const [posts, __]: [Post[], number] = await postRepo.findAndCount({
+      skip,
+      take: selectionAmount,
+      where: outputTopics(inputs.topics!),
+      order: <FindOptionsOrder<Post>>order!,
+      relations: {
+        user: true,
+      },
+    });
+    console.log("posts:", posts);
     return {
-      errors: [
-        { field: "No error", error: "check console . log please baebs" },
-      ],
+      posts: posts!,
     };
   }
 
@@ -96,6 +99,7 @@ export class PostResolver {
     @Ctx() { req }: MyContext
   ): Promise<aPostResponse> {
     // Maybe do some checks on the form data.
+    // All data should be lowercase please
 
     if (!req.headers["authorization"]) {
       return { errors: [{ field: "user", error: "User not logged in" }] };
