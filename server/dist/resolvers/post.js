@@ -124,16 +124,17 @@ class PostResolver {
             const selectionAmount = 25;
             let skip = inputs.scrolledDown * selectionAmount;
             const postRepo = index_1.conn.getRepository(Post_1.Post);
-            const [posts, __] = yield postRepo.findAndCount({
+            let repoVar = {
                 skip,
                 take: selectionAmount,
-                where: (0, paginated_Utils_1.outputTopics)(inputs.topics),
                 order: order,
                 relations: {
                     user: true,
                 },
-            });
-            console.log("posts:", posts);
+            };
+            typeof inputs.topics !== undefined &&
+                (repoVar.where = (0, paginated_Utils_1.outputTopics)(inputs.topics));
+            const [posts, __] = yield postRepo.findAndCount(repoVar);
             return {
                 posts: posts,
             };
@@ -162,23 +163,17 @@ class PostResolver {
         });
     }
     ratePost(inputs, { req }) {
+        var _a, _b, _c, _d, _e, _f;
         return __awaiter(this, void 0, void 0, function* () {
+            if (!req.headers["authorization"]) {
+                return {
+                    errors: [{ field: "user", error: "User not logged in" }],
+                    success: false,
+                };
+            }
             let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
             if (typeof user.errors == undefined) {
                 return { errors: user.errors, success: false };
-            }
-            let dir = 0;
-            if (inputs.direction == "up") {
-                dir += 1;
-            }
-            else if (inputs.direction == "down") {
-                dir -= 1;
-            }
-            else {
-                return {
-                    errors: [{ field: "direction", error: "Invalid direction" }],
-                    success: false,
-                };
             }
             let post = yield index_1.conn.manager.findOne(Post_1.Post, {
                 where: { id: inputs.postId },
@@ -189,6 +184,29 @@ class PostResolver {
                     success: false,
                 };
             }
+            let dir = 0;
+            if (inputs.direction == "up") {
+                dir += 1;
+                let postId = (_b = (_a = user.user) === null || _a === void 0 ? void 0 : _a.likes) === null || _b === void 0 ? void 0 : _b.find((e) => e == inputs.postId);
+                if (postId != undefined) {
+                    console.log("post id", postId);
+                }
+                else {
+                    console.log("aww shucks");
+                }
+                (_d = (_c = user.user) === null || _c === void 0 ? void 0 : _c.likes) === null || _d === void 0 ? void 0 : _d.push(inputs.postId);
+            }
+            else if (inputs.direction == "down") {
+                dir -= 1;
+                (_f = (_e = user.user) === null || _e === void 0 ? void 0 : _e.dislikes) === null || _f === void 0 ? void 0 : _f.push(inputs.postId);
+            }
+            else {
+                return {
+                    errors: [{ field: "direction", error: "Invalid direction" }],
+                    success: false,
+                };
+            }
+            yield index_1.conn.manager.save(User_1.User, user.user);
             post.ranking += dir;
             yield index_1.conn.manager.save(Post_1.Post, post);
             return {

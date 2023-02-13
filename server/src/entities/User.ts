@@ -38,12 +38,12 @@ export class User extends BaseEntity {
   @OneToMany(() => Post, (post) => post.user)
   posts?: Post[];
 
-  @Field()
-  @Column()
+  @Field(() => [Number])
+  @Column("int", { array: true, nullable: true })
   likes?: number[];
 
-  @Field()
-  @Column()
+  @Field(() => [Number])
+  @Column("int", { array: true, nullable: true })
   dislikes?: number[];
 
   @Field(() => String)

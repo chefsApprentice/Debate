@@ -164,19 +164,25 @@ export class PostResolver {
 
     let dir = 0;
     if (inputs.direction == "up") {
-      dir += 1;
+      dir = 1;
       // not scaleable
-      if (user.user?.likes?.find((e) => e == inputs.postId) != undefined) {
-        return {
-          errors: [
-            { field: "direction", error: "You have already liked this post." },
-          ],
-          success: false,
-        };
+      //check if this works
+      let likesId = user.user!.likes?.indexOf(inputs.postId);
+      if (likesId! > -1) {
+        post.ranking -= 1;
+        user.user?.likes!.splice(likesId!);
+        await conn.manager.save(Post, post);
+        // return {
+        //   errors: [
+        //     { field: "direction", error: "You have already liked this post." },
+        //   ],
+        //   success: false,
+        // };
       }
+      let dislikesId = user.user?.dislikes?.find((e) => e == inputs.postId);
       user.user?.likes?.push(inputs.postId);
     } else if (inputs.direction == "down") {
-      dir -= 1;
+      dir = -1;
       user.user?.dislikes?.push(inputs.postId);
     } else {
       return {

@@ -40,6 +40,16 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "posts", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => [Number]),
+    (0, typeorm_1.Column)("int", { array: true, nullable: true }),
+    __metadata("design:type", Array)
+], User.prototype, "likes", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [Number]),
+    (0, typeorm_1.Column)("int", { array: true, nullable: true }),
+    __metadata("design:type", Array)
+], User.prototype, "dislikes", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
