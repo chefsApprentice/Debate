@@ -19,13 +19,10 @@ const orderSwitch = (orderName, orderBy) => {
             return { date_created: orderBy };
         case "ranking":
             return { ranking: orderBy };
-<<<<<<< HEAD
-=======
         case "arguments":
             return { arguments: orderBy };
         case "id":
             return { id: orderBy };
->>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
         default:
             return { last_modified: orderBy };
     }

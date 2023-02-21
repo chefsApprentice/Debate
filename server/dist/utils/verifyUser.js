@@ -18,13 +18,9 @@ const User_1 = require("../entities/User");
 const index_1 = require("../index");
 const verifyUser = (authHeader) => __awaiter(void 0, void 0, void 0, function* () {
     if (!authHeader) {
-<<<<<<< HEAD
-        return { errors: [{ field: "user", error: "User not logged in" }] };
-=======
         return {
             errors: [{ field: "user", error: "User not logged in" }],
         };
->>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
     }
     try {
         let userId = (jsonwebtoken_1.default.verify(authHeader, process.env.HASH_JWT));

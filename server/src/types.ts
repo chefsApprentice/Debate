@@ -18,10 +18,6 @@ export class FieldError {
 export class OperationFieldResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
-<<<<<<< HEAD
-  @Field(() => String, { nullable: true })
-=======
   @Field()
->>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
   operation?: string;
 }

@@ -15,6 +15,7 @@ import { verifyUser } from "../utils/verifyUser";
 import { User } from "../entities/User";
 import { orderSwitch, outputTopics } from "../utils/paginated Utils";
 import { FindOptionsOrder } from "typeorm";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 @Resolver(Post)
 @InputType()
@@ -118,22 +119,39 @@ export class PostResolver {
     // Maybe do some checks on the form data.
     // All data should be lowercase please
 
-    let user = await verifyUser(req.headers["authorization"]!);
-    if (typeof user.errors == undefined) {
-      return { errors: user.errors };
+    let userOrError = await verifyUser(req.headers["authorization"]!);
+    if (typeof userOrError.errors == undefined) {
+      return { errors: userOrError.errors };
     }
-    let newPost = new Post();
-    newPost.title = inputs.title;
-    newPost.description = inputs.description;
-    newPost.topic = inputs.topic;
-    newPost.ranking = 0;
-    newPost.user = user.user!;
+    // cannot use the user from verify user as we ened the post relation
+    let userId: JwtPayload = <JwtPayload>(
+      await jwt.verify(req.headers["authorization"]!, process.env.HASH_JWT!)
+    );
+    let userRepo = await conn.getRepository(User);
+    let user = await userRepo.findOne({
+      where: { id: userId.userId! },
+      relations: { posts: true },
+    });
 
-    let post = await conn.manager.save(Post, newPost);
-    user.user?.posts?.push(post);
-    await conn.manager.save(User, user.user!);
+    let newPost: any = {
+      title: inputs.title,
+      description: inputs.description,
+      topic: inputs.topic,
+      ranking: 0,
+      user: user,
+      arguments: [],
+    };
 
-    return { post: newPost };
+    let postRepo = await conn.getRepository(Post);
+    let post = await postRepo.save(postRepo.create(newPost));
+
+    // let post = await conn.manager.save(Post, newPost);
+    console.log("post:", post);
+    user!.posts?.push(<Post>(<unknown>post));
+
+    await userRepo.save(user!);
+
+    return { post: <Post>(<unknown>post) };
   }
 
   @Mutation(() => aPostResponse)

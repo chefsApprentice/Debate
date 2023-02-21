@@ -132,6 +132,7 @@ export class UserResolver {
     newUser.email = inputs.email;
     newUser.username = inputs.username;
     newUser.password = hashedPassword;
+    newUser.topicsFollowed = [];
     newUser.argLikes = [];
     newUser.argDislikes = [];
     newUser.likes = [];
