@@ -143,9 +143,6 @@ class PostResolver {
     createPost(inputs, { req }) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!req.headers["authorization"]) {
-                return { errors: [{ field: "user", error: "User not logged in" }] };
-            }
             let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
             if (typeof user.errors == undefined) {
                 return { errors: user.errors };
@@ -165,47 +162,76 @@ class PostResolver {
     ratePost(inputs, { req }) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         return __awaiter(this, void 0, void 0, function* () {
-            let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
-            if (typeof user.errors == undefined) {
-                return { errors: user.errors, success: false };
+            let userOrError = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
+            if (userOrError.errors) {
+                return { errors: userOrError.errors };
             }
+            let user = userOrError.user;
+            console.log("what");
             let post = yield index_1.conn.manager.findOne(Post_1.Post, {
                 where: { id: inputs.postId },
             });
             if (!post) {
                 return {
                     errors: [{ field: "post_id", error: "Post doesn't exist" }],
-                    success: false,
                 };
             }
             let dir = 0;
             if (inputs.direction == "up") {
                 dir = 1;
-                let likesId = (_a = user.user.likes) === null || _a === void 0 ? void 0 : _a.indexOf(inputs.postId);
+                let likesId = (_a = user.likes) === null || _a === void 0 ? void 0 : _a.indexOf(inputs.postId);
                 if (likesId > -1) {
                     post.ranking -= 1;
-                    (_b = user.user) === null || _b === void 0 ? void 0 : _b.likes.splice(likesId);
+                    user === null || user === void 0 ? void 0 : user.likes.splice(likesId);
+                    yield index_1.conn.manager.save(User_1.User, user);
                     yield index_1.conn.manager.save(Post_1.Post, post);
+                    return { post };
                 }
-                let dislikesId = (_d = (_c = user.user) === null || _c === void 0 ? void 0 : _c.dislikes) === null || _d === void 0 ? void 0 : _d.find((e) => e == inputs.postId);
-                (_f = (_e = user.user) === null || _e === void 0 ? void 0 : _e.likes) === null || _f === void 0 ? void 0 : _f.push(inputs.postId);
+                let dislikesId = (_b = user.dislikes) === null || _b === void 0 ? void 0 : _b.indexOf(inputs.postId);
+                if (dislikesId > -1) {
+                    post.ranking += 2;
+                    user === null || user === void 0 ? void 0 : user.dislikes.splice(likesId);
+                    (_c = user === null || user === void 0 ? void 0 : user.likes) === null || _c === void 0 ? void 0 : _c.push(inputs.postId);
+                    yield index_1.conn.manager.save(User_1.User, user);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    return { post };
+                }
+                post.ranking += dir;
+                (_d = user === null || user === void 0 ? void 0 : user.likes) === null || _d === void 0 ? void 0 : _d.push(inputs.postId);
+                yield index_1.conn.manager.save(User_1.User, user);
+                yield index_1.conn.manager.save(Post_1.Post, post);
+                return { post };
             }
             else if (inputs.direction == "down") {
                 dir = -1;
-                (_h = (_g = user.user) === null || _g === void 0 ? void 0 : _g.dislikes) === null || _h === void 0 ? void 0 : _h.push(inputs.postId);
+                let likesId = (_e = user.likes) === null || _e === void 0 ? void 0 : _e.indexOf(inputs.postId);
+                if (likesId > -1) {
+                    post.ranking -= 2;
+                    user === null || user === void 0 ? void 0 : user.likes.splice(likesId);
+                    (_f = user === null || user === void 0 ? void 0 : user.dislikes) === null || _f === void 0 ? void 0 : _f.push(inputs.postId);
+                    yield index_1.conn.manager.save(User_1.User, user);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    return { post };
+                }
+                let dislikesId = (_g = user.dislikes) === null || _g === void 0 ? void 0 : _g.indexOf(inputs.postId);
+                if (dislikesId > -1) {
+                    post.ranking += 1;
+                    user === null || user === void 0 ? void 0 : user.dislikes.splice(likesId);
+                    yield index_1.conn.manager.save(User_1.User, user);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    return { post };
+                }
+                post.ranking += dir;
+                (_h = user === null || user === void 0 ? void 0 : user.dislikes) === null || _h === void 0 ? void 0 : _h.push(inputs.postId);
+                yield index_1.conn.manager.save(User_1.User, user);
+                yield index_1.conn.manager.save(Post_1.Post, post);
+                return { post };
             }
             else {
                 return {
                     errors: [{ field: "direction", error: "Invalid direction" }],
-                    success: false,
                 };
             }
-            yield index_1.conn.manager.save(User_1.User, user.user);
-            post.ranking += dir;
-            yield index_1.conn.manager.save(Post_1.Post, post);
-            return {
-                success: true,
-            };
         });
     }
 }
@@ -231,7 +257,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => types_1.SuccessFieldResponse),
+    (0, type_graphql_1.Mutation)(() => aPostResponse),
     __param(0, (0, type_graphql_1.Arg)("inputs")),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),

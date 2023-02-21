@@ -33,8 +33,8 @@ __decorate([
 ], SuccessFieldResponse.prototype, "errors", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
-    __metadata("design:type", Boolean)
-], SuccessFieldResponse.prototype, "success", void 0);
+    __metadata("design:type", String)
+], SuccessFieldResponse.prototype, "operation", void 0);
 SuccessFieldResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], SuccessFieldResponse);

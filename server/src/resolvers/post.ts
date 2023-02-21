@@ -118,10 +118,6 @@ export class PostResolver {
     // Maybe do some checks on the form data.
     // All data should be lowercase please
 
-    if (!req.headers["authorization"]) {
-      return { errors: [{ field: "user", error: "User not logged in" }] };
-    }
-
     let user = await verifyUser(req.headers["authorization"]!);
     if (typeof user.errors == undefined) {
       return { errors: user.errors };
@@ -140,51 +136,80 @@ export class PostResolver {
     return { post: newPost };
   }
 
-  @Mutation(() => SuccessFieldResponse)
+  @Mutation(() => aPostResponse)
   async ratePost(
     @Arg("inputs") inputs: rateInput,
     @Ctx() { req }: MyContext
-  ): Promise<SuccessFieldResponse> {
-    let user = await verifyUser(req.headers["authorization"]!);
-    if (typeof user.errors == undefined) {
-      return { errors: user.errors, success: false };
+  ): Promise<aPostResponse> {
+    let userOrError = await verifyUser(req.headers["authorization"]!);
+    if (userOrError.errors) {
+      return { errors: userOrError.errors };
     }
+    let user = userOrError.user;
 
+    console.log("what");
     let post = await conn.manager.findOne(Post, {
       where: { id: inputs.postId },
     });
     if (!post) {
       return {
         errors: [{ field: "post_id", error: "Post doesn't exist" }],
-        success: false,
       };
     }
 
     let dir = 0;
     if (inputs.direction == "up") {
       dir = 1;
-      let likesId = user.user!.likes?.indexOf(inputs.postId);
+      let likesId = user!.likes?.indexOf(inputs.postId);
       if (likesId! > -1) {
         post.ranking -= 1;
-        user.user?.likes!.splice(likesId!);
+        user?.likes!.splice(likesId!);
+        await conn.manager.save(User, user!);
         await conn.manager.save(Post, post);
+        return { post };
       }
-      let dislikesId = user.user?.dislikes?.find((e) => e == inputs.postId);
-      user.user?.likes?.push(inputs.postId);
+      let dislikesId = user!.dislikes?.indexOf(inputs.postId);
+      if (dislikesId! > -1) {
+        post.ranking += 2;
+        user?.dislikes!.splice(likesId!);
+        user?.likes?.push(inputs.postId);
+        await conn.manager.save(User, user!);
+        await conn.manager.save(Post, post);
+        return { post };
+      }
+      post.ranking += dir;
+      user?.likes?.push(inputs.postId);
+      await conn.manager.save(User, user!);
+      await conn.manager.save(Post, post);
+      return { post };
     } else if (inputs.direction == "down") {
       dir = -1;
-      user.user?.dislikes?.push(inputs.postId);
+      let likesId = user!.likes?.indexOf(inputs.postId);
+      if (likesId! > -1) {
+        post.ranking -= 2;
+        user?.likes!.splice(likesId!);
+        user?.dislikes?.push(inputs.postId);
+        await conn.manager.save(User, user!);
+        await conn.manager.save(Post, post);
+        return { post };
+      }
+      let dislikesId = user!.dislikes?.indexOf(inputs.postId);
+      if (dislikesId! > -1) {
+        post.ranking += 1;
+        user?.dislikes!.splice(likesId!);
+        await conn.manager.save(User, user!);
+        await conn.manager.save(Post, post);
+        return { post };
+      }
+      post.ranking += dir;
+      user?.dislikes?.push(inputs.postId);
+      await conn.manager.save(User, user!);
+      await conn.manager.save(Post, post);
+      return { post };
     } else {
       return {
         errors: [{ field: "direction", error: "Invalid direction" }],
-        success: false,
       };
     }
-    await conn.manager.save(User, user.user!);
-    post.ranking += dir;
-    await conn.manager.save(Post, post);
-    return {
-      success: true,
-    };
   }
 }
