@@ -73,31 +73,37 @@ export class PostResolver {
     return posts;
   }
 
+  // Customsiable inputs for continously loading posts in a paginated way
   @Query(() => postsResponse)
   async paginatedPosts(
-    @Arg("inputs") inputs: postsInput,
-    @Ctx() { res }: MyContext
+    @Arg("inputs") inputs: postsInput
   ): Promise<postsResponse> {
+    // Turn order variables from string to whitelisted dictionairy using switch func
     let order = orderSwitch(inputs.sortBy[0], inputs.sortBy[1]);
-    if (order?.error) {
-      return { errors: [order] };
-    }
-    const selectionAmount = 3;
+    // The amount of posts selected by each query
+    const selectionAmount = 25;
     let skip = inputs.scrolledDown * selectionAmount;
-    const postRepo = conn.getRepository(Post);
 
+    const postRepo = conn.getRepository(Post);
+    // Variables for query
     let repoVar: any = {
       skip,
       take: selectionAmount,
+      // using the order variable, ensuring it is in the correct type
       order: <FindOptionsOrder<Post>>order!,
+      // Allows graphQL to select user data, in this case only username
       relations: {
         user: true,
       },
     };
 
-    typeof inputs.topics !== undefined &&
-      (repoVar.where = outputTopics(inputs.topics!));
+    // if there are no topics in inputs, include all topics in query so dont add var.
+    if (typeof inputs.topics !== undefined && inputs.topics?.length!) {
+      console.log("bad");
+      repoVar.where = outputTopics(inputs.topics!);
+    }
 
+    // __ means unused var, as we do not need to know how many posts match
     const [posts, __]: [Post[], number] = await postRepo.findAndCount(repoVar);
     return {
       posts: posts!,
@@ -130,23 +136,18 @@ export class PostResolver {
     return { post: newPost };
   }
 
-  @Mutation(() => OperationFieldResponse)
+  @Mutation(() => aPostResponse)
   async ratePost(
     @Arg("inputs") inputs: rateInput,
     @Ctx() { req }: MyContext
-  ): Promise<OperationFieldResponse> {
-    if (!req.headers["authorization"]) {
-      return {
-        errors: [{ field: "user", error: "User not logged in" }],
-      };
+  ): Promise<aPostResponse> {
+    let userOrError = await verifyUser(req.headers["authorization"]!);
+    if (userOrError.errors) {
+      return { errors: userOrError.errors };
     }
+    let user = userOrError.user;
 
-    let user = await verifyUser(req.headers["authorization"]!);
-    // I think we need yo update verify suer to include the undeifned case so taht way we still get errors
-    if (typeof user.errors == undefined) {
-      return { errors: user.errors };
-    }
-
+    console.log("what");
     let post = await conn.manager.findOne(Post, {
       where: { id: inputs.postId },
     });
@@ -159,81 +160,56 @@ export class PostResolver {
     let dir = 0;
     if (inputs.direction == "up") {
       dir = 1;
-      // not scaleable
-      //check if this works
-      let likesId = user.user!.likes?.indexOf(inputs.postId);
+      let likesId = user!.likes?.indexOf(inputs.postId);
       if (likesId! > -1) {
-        dir = -1;
-        console.log("1  ");
-        post.ranking += dir;
-        user.user?.likes!.splice(likesId!);
+        post.ranking -= 1;
+        user?.likes!.splice(likesId!);
+        await conn.manager.save(User, user!);
         await conn.manager.save(Post, post);
-        await conn.manager.save(User, user.user!);
-        return {
-          operation: "unliked",
-        };
+        return { post };
       }
-      let dislikesId = user.user?.dislikes?.indexOf(inputs.postId);
+      let dislikesId = user!.dislikes?.indexOf(inputs.postId);
       if (dislikesId! > -1) {
-        dir = +2;
-        post.ranking += dir;
-        user.user?.dislikes!.splice(dislikesId!);
+        post.ranking += 2;
+        user?.dislikes!.splice(likesId!);
+        user?.likes?.push(inputs.postId);
+        await conn.manager.save(User, user!);
         await conn.manager.save(Post, post);
-        await conn.manager.save(User, user.user!);
-        return {
-          operation: "liked",
-        };
+        return { post };
       }
-
       post.ranking += dir;
-      try {
-        user.user?.likes!.push(inputs.postId);
-      } catch {
-        user.user!.likes = [inputs.postId];
-      }
+      user?.likes?.push(inputs.postId);
+      await conn.manager.save(User, user!);
       await conn.manager.save(Post, post);
-      await conn.manager.save(User, user.user!);
-      return {
-        operation: "liked",
-      };
+      return { post };
     } else if (inputs.direction == "down") {
       dir = -1;
-      let dislikesId = user.user?.dislikes?.indexOf(inputs.postId);
-      if (dislikesId! > -1) {
-        dir = +1;
-        post.ranking += dir;
-        user.user?.dislikes!.splice(dislikesId!);
-        await conn.manager.save(Post, post);
-        await conn.manager.save(User, user.user!);
-        return {
-          operation: "undisliked",
-        };
-      }
-      let likesId = user.user!.likes?.indexOf(inputs.postId);
+      let likesId = user!.likes?.indexOf(inputs.postId);
       if (likesId! > -1) {
-        dir = -2;
-        post.ranking += dir;
-        user.user?.likes!.splice(likesId!);
+        post.ranking -= 2;
+        user?.likes!.splice(likesId!);
+        user?.dislikes?.push(inputs.postId);
+        await conn.manager.save(User, user!);
         await conn.manager.save(Post, post);
-        await conn.manager.save(User, user.user!);
-        return {
-          operation: "dislked",
-        };
+        return { post };
+      }
+      let dislikesId = user!.dislikes?.indexOf(inputs.postId);
+      if (dislikesId! > -1) {
+        post.ranking += 1;
+        user?.dislikes!.splice(likesId!);
+        await conn.manager.save(User, user!);
+        await conn.manager.save(Post, post);
+        return { post };
       }
       post.ranking += dir;
-      try {
-        user.user?.dislikes!.push(inputs.postId);
-      } catch {
-        user.user!.dislikes = [inputs.postId];
-      }
+      user?.dislikes?.push(inputs.postId);
+      await conn.manager.save(User, user!);
       await conn.manager.save(Post, post);
-      await conn.manager.save(User, user.user!);
+      return { post };
+    } else {
       return {
-        operation: "disliked",
+        errors: [{ field: "direction", error: "Invalid direction" }],
       };
     }
-    return {
-      errors: [{ field: "direction", error: "Invalid direction" }],
-    };
   }
 }

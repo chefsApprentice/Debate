@@ -154,6 +154,8 @@ class UserResolver {
             newUser.email = inputs.email;
             newUser.username = inputs.username;
             newUser.password = hashedPassword;
+            newUser.argLikes = [];
+            newUser.argDislikes = [];
             newUser.likes = [];
             newUser.dislikes = [];
             yield index_1.conn.manager.save(newUser);

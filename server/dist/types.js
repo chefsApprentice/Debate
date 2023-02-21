@@ -32,10 +32,17 @@ __decorate([
     __metadata("design:type", Array)
 ], OperationFieldResponse.prototype, "errors", void 0);
 __decorate([
+<<<<<<< HEAD
     (0, type_graphql_1.Field)(() => String, { nullable: true }),
     __metadata("design:type", String)
 ], OperationFieldResponse.prototype, "operation", void 0);
 OperationFieldResponse = __decorate([
+=======
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], SuccessFieldResponse.prototype, "operation", void 0);
+SuccessFieldResponse = __decorate([
+>>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
     (0, type_graphql_1.ObjectType)()
 ], OperationFieldResponse);
 exports.OperationFieldResponse = OperationFieldResponse;

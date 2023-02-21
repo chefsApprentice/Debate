@@ -29,6 +29,14 @@ export class Argument extends BaseEntity {
   @Column()
   title!: string;
 
+  @Field()
+  @Column()
+  type!: string;
+
+  @Field()
+  @Column()
+  ranking: number;
+
   @Field(() => [String])
   @Column("text", { array: true })
   points: string[];

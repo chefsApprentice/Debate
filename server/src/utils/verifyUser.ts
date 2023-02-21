@@ -5,9 +5,10 @@ import { conn } from "../index";
 
 export const verifyUser = async (authHeader: string): Promise<userResponse> => {
   if (!authHeader) {
-    return { errors: [{ field: "user", error: "User not logged in" }] };
+    return {
+      errors: [{ field: "user", error: "User not logged in" }],
+    };
   }
-
   try {
     let userId: JwtPayload = <JwtPayload>(
       jwt.verify(authHeader!, process.env.HASH_JWT!)

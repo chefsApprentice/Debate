@@ -115,13 +115,18 @@ class PostResolver {
             return posts;
         });
     }
-    paginatedPosts(inputs, { res }) {
+    paginatedPosts(inputs) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let order = (0, paginated_Utils_1.orderSwitch)(inputs.sortBy[0], inputs.sortBy[1]);
+<<<<<<< HEAD
             if (order === null || order === void 0 ? void 0 : order.error) {
                 return { errors: [order] };
             }
             const selectionAmount = 3;
+=======
+            const selectionAmount = 25;
+>>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
             let skip = inputs.scrolledDown * selectionAmount;
             const postRepo = index_1.conn.getRepository(Post_1.Post);
             let repoVar = {
@@ -132,8 +137,10 @@ class PostResolver {
                     user: true,
                 },
             };
-            typeof inputs.topics !== undefined &&
-                (repoVar.where = (0, paginated_Utils_1.outputTopics)(inputs.topics));
+            if (typeof inputs.topics !== undefined && ((_a = inputs.topics) === null || _a === void 0 ? void 0 : _a.length)) {
+                console.log("bad");
+                repoVar.where = (0, paginated_Utils_1.outputTopics)(inputs.topics);
+            }
             const [posts, __] = yield postRepo.findAndCount(repoVar);
             return {
                 posts: posts,
@@ -160,6 +167,7 @@ class PostResolver {
         });
     }
     ratePost(inputs, { req }) {
+<<<<<<< HEAD
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.headers["authorization"]) {
@@ -170,7 +178,16 @@ class PostResolver {
             let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
             if (typeof user.errors == undefined) {
                 return { errors: user.errors };
+=======
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        return __awaiter(this, void 0, void 0, function* () {
+            let userOrError = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
+            if (userOrError.errors) {
+                return { errors: userOrError.errors };
+>>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
             }
+            let user = userOrError.user;
+            console.log("what");
             let post = yield index_1.conn.manager.findOne(Post_1.Post, {
                 where: { id: inputs.postId },
             });
@@ -182,6 +199,7 @@ class PostResolver {
             let dir = 0;
             if (inputs.direction == "up") {
                 dir = 1;
+<<<<<<< HEAD
                 let likesId = (_a = user.user.likes) === null || _a === void 0 ? void 0 : _a.indexOf(inputs.postId);
                 if (likesId > -1) {
                     dir = -1;
@@ -258,6 +276,61 @@ class PostResolver {
             return {
                 errors: [{ field: "direction", error: "Invalid direction" }],
             };
+=======
+                let likesId = (_a = user.likes) === null || _a === void 0 ? void 0 : _a.indexOf(inputs.postId);
+                if (likesId > -1) {
+                    post.ranking -= 1;
+                    user === null || user === void 0 ? void 0 : user.likes.splice(likesId);
+                    yield index_1.conn.manager.save(User_1.User, user);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    return { post };
+                }
+                let dislikesId = (_b = user.dislikes) === null || _b === void 0 ? void 0 : _b.indexOf(inputs.postId);
+                if (dislikesId > -1) {
+                    post.ranking += 2;
+                    user === null || user === void 0 ? void 0 : user.dislikes.splice(likesId);
+                    (_c = user === null || user === void 0 ? void 0 : user.likes) === null || _c === void 0 ? void 0 : _c.push(inputs.postId);
+                    yield index_1.conn.manager.save(User_1.User, user);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    return { post };
+                }
+                post.ranking += dir;
+                (_d = user === null || user === void 0 ? void 0 : user.likes) === null || _d === void 0 ? void 0 : _d.push(inputs.postId);
+                yield index_1.conn.manager.save(User_1.User, user);
+                yield index_1.conn.manager.save(Post_1.Post, post);
+                return { post };
+            }
+            else if (inputs.direction == "down") {
+                dir = -1;
+                let likesId = (_e = user.likes) === null || _e === void 0 ? void 0 : _e.indexOf(inputs.postId);
+                if (likesId > -1) {
+                    post.ranking -= 2;
+                    user === null || user === void 0 ? void 0 : user.likes.splice(likesId);
+                    (_f = user === null || user === void 0 ? void 0 : user.dislikes) === null || _f === void 0 ? void 0 : _f.push(inputs.postId);
+                    yield index_1.conn.manager.save(User_1.User, user);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    return { post };
+                }
+                let dislikesId = (_g = user.dislikes) === null || _g === void 0 ? void 0 : _g.indexOf(inputs.postId);
+                if (dislikesId > -1) {
+                    post.ranking += 1;
+                    user === null || user === void 0 ? void 0 : user.dislikes.splice(likesId);
+                    yield index_1.conn.manager.save(User_1.User, user);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    return { post };
+                }
+                post.ranking += dir;
+                (_h = user === null || user === void 0 ? void 0 : user.dislikes) === null || _h === void 0 ? void 0 : _h.push(inputs.postId);
+                yield index_1.conn.manager.save(User_1.User, user);
+                yield index_1.conn.manager.save(Post_1.Post, post);
+                return { post };
+            }
+            else {
+                return {
+                    errors: [{ field: "direction", error: "Invalid direction" }],
+                };
+            }
+>>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
         });
     }
 }
@@ -270,9 +343,8 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => postsResponse),
     __param(0, (0, type_graphql_1.Arg)("inputs")),
-    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [postsInput, Object]),
+    __metadata("design:paramtypes", [postsInput]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "paginatedPosts", null);
 __decorate([
@@ -284,7 +356,11 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
 __decorate([
+<<<<<<< HEAD
     (0, type_graphql_1.Mutation)(() => types_1.OperationFieldResponse),
+=======
+    (0, type_graphql_1.Mutation)(() => aPostResponse),
+>>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
     __param(0, (0, type_graphql_1.Arg)("inputs")),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),

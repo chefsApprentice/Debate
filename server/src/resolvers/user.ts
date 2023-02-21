@@ -78,7 +78,8 @@ export class UserResolver {
     if (errors.length != 0) {
       return { errors };
     }
-    //unlike validating the register this is not repettive so should stay in the main func
+
+    // Verifying user and email are unique
     let user = await conn.manager.findOneBy(User, {
       username: inputs.username,
     });
@@ -106,8 +107,11 @@ export class UserResolver {
       };
     }
 
+    // Use imported library to hash password with 10 salts, need password to be secure
     const hashedPassword = await bcrypt.hash(inputs.password, 10);
 
+    // Token so that when the user stays logged in after elaving webpage
+    // Uses environment varibale for hash for secuity
     const token = await jwt.sign(
       { username: inputs.username },
       <string>process.env.HASH_JWT,
@@ -115,6 +119,8 @@ export class UserResolver {
         expiresIn: "14d",
       }
     );
+    // Client's browser cookie is set to the hashed token containing their user id.
+    // Some of these settings are needed for testing in Apollo sandbox
     res.cookie("uid", token, {
       maxAge: 14 * 24 * 60 * 60 * 1000,
       httpOnly: true,
@@ -122,28 +128,17 @@ export class UserResolver {
       sameSite: "none",
     });
 
-    // const result = await User.insert({
-    //   email: inputs.email,
-    //   username: inputs.username,
-    //   password: hashedPassword,
-    //   token: token,
-    // });
-
     const newUser = new User();
     newUser.email = inputs.email;
     newUser.username = inputs.username;
     newUser.password = hashedPassword;
+    newUser.argLikes = [];
+    newUser.argDislikes = [];
     newUser.likes = [];
     newUser.dislikes = [];
 
     await conn.manager.save(newUser);
-
     return { user: newUser! };
-
-    // req.session.userId = user.id;
-    // req.session.save();
-
-    // hash password and create an account
   }
 
   @Mutation(() => userResponse)
@@ -151,11 +146,12 @@ export class UserResolver {
     @Arg("inputs") inputs: loginInput,
     @Ctx() { res, req }: MyContext
   ): Promise<userResponse> {
-    if (req.headers["authorization"]!) {
+    if (req.headers["authorization"]) {
       return {
         errors: [{ field: "token", error: "You are already logged in" }],
       };
     }
+    // let errors = validateLogin(inputs);
 
     let user = await conn.manager.findOneBy(
       User,

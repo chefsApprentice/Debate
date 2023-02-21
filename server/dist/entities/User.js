@@ -50,12 +50,20 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "dislikes", void 0);
 __decorate([
+<<<<<<< HEAD
     (0, type_graphql_1.Field)(() => [Number], { nullable: true }),
+=======
+    (0, type_graphql_1.Field)(() => [Number]),
+>>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
     (0, typeorm_1.Column)("int", { array: true, nullable: true }),
     __metadata("design:type", Array)
 ], User.prototype, "argLikes", void 0);
 __decorate([
+<<<<<<< HEAD
     (0, type_graphql_1.Field)(() => [Number], { nullable: true }),
+=======
+    (0, type_graphql_1.Field)(() => [Number]),
+>>>>>>> 59d6e8692c01d6801d0f639d2467ff0dd3ae420d
     (0, typeorm_1.Column)("int", { array: true, nullable: true }),
     __metadata("design:type", Array)
 ], User.prototype, "argDislikes", void 0);
