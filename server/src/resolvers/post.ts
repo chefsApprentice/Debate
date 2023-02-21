@@ -98,8 +98,10 @@ export class PostResolver {
     };
 
     // if there are no topics in inputs, include all topics in query so dont add var.
-    typeof inputs.topics !== undefined &&
-      (repoVar.where = outputTopics(inputs.topics!));
+    if (typeof inputs.topics !== undefined && inputs.topics?.length!) {
+      console.log("bad");
+      repoVar.where = outputTopics(inputs.topics!);
+    }
 
     // __ means unused var, as we do not need to know how many posts match
     const [posts, __]: [Post[], number] = await postRepo.findAndCount(repoVar);

@@ -116,6 +116,7 @@ class PostResolver {
         });
     }
     paginatedPosts(inputs) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let order = (0, paginated_Utils_1.orderSwitch)(inputs.sortBy[0], inputs.sortBy[1]);
             const selectionAmount = 25;
@@ -129,8 +130,10 @@ class PostResolver {
                     user: true,
                 },
             };
-            typeof inputs.topics !== undefined &&
-                (repoVar.where = (0, paginated_Utils_1.outputTopics)(inputs.topics));
+            if (typeof inputs.topics !== undefined && ((_a = inputs.topics) === null || _a === void 0 ? void 0 : _a.length)) {
+                console.log("bad");
+                repoVar.where = (0, paginated_Utils_1.outputTopics)(inputs.topics);
+            }
             const [posts, __] = yield postRepo.findAndCount(repoVar);
             return {
                 posts: posts,
