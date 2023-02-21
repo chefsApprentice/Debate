@@ -148,6 +148,80 @@ class ArgumentResolver {
             return { argument: argument };
         });
     }
+    rateArgument(inputs, { req }) {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        return __awaiter(this, void 0, void 0, function* () {
+            let userOrError = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
+            if (userOrError.errors) {
+                return { errors: userOrError.errors };
+            }
+            let user = userOrError.user;
+            let argument = yield __1.conn.manager.findOne(Argument_1.Argument, {
+                where: { id: inputs.targetId },
+            });
+            if (!argument) {
+                return {
+                    errors: [{ field: "targetId", error: "Argument doesn't exist" }],
+                };
+            }
+            let dir = 0;
+            if (inputs.direction == "up") {
+                dir = 1;
+                let likesId = (_a = user.argLikes) === null || _a === void 0 ? void 0 : _a.indexOf(inputs.targetId);
+                if (likesId > -1) {
+                    argument.ranking -= 1;
+                    user === null || user === void 0 ? void 0 : user.argLikes.splice(likesId);
+                    yield __1.conn.manager.save(User_1.User, user);
+                    yield __1.conn.manager.save(Argument_1.Argument, argument);
+                    return { argument };
+                }
+                let dislikesId = (_b = user.argDislikes) === null || _b === void 0 ? void 0 : _b.indexOf(inputs.targetId);
+                if (dislikesId > -1) {
+                    argument.ranking += 2;
+                    user === null || user === void 0 ? void 0 : user.argDislikes.splice(likesId);
+                    (_c = user === null || user === void 0 ? void 0 : user.argLikes) === null || _c === void 0 ? void 0 : _c.push(inputs.targetId);
+                    yield __1.conn.manager.save(User_1.User, user);
+                    yield __1.conn.manager.save(Argument_1.Argument, argument);
+                    return { argument };
+                }
+                argument.ranking += dir;
+                (_d = user === null || user === void 0 ? void 0 : user.argLikes) === null || _d === void 0 ? void 0 : _d.push(inputs.targetId);
+                yield __1.conn.manager.save(User_1.User, user);
+                yield __1.conn.manager.save(Argument_1.Argument, argument);
+                return { argument };
+            }
+            else if (inputs.direction == "down") {
+                dir = -1;
+                let likesId = (_e = user.argLikes) === null || _e === void 0 ? void 0 : _e.indexOf(inputs.targetId);
+                if (likesId > -1) {
+                    argument.ranking -= 2;
+                    user === null || user === void 0 ? void 0 : user.argLikes.splice(likesId);
+                    (_f = user === null || user === void 0 ? void 0 : user.argDislikes) === null || _f === void 0 ? void 0 : _f.push(inputs.targetId);
+                    yield __1.conn.manager.save(User_1.User, user);
+                    yield __1.conn.manager.save(Argument_1.Argument, argument);
+                    return { argument };
+                }
+                let dislikesId = (_g = user.argDislikes) === null || _g === void 0 ? void 0 : _g.indexOf(inputs.targetId);
+                if (dislikesId > -1) {
+                    argument.ranking += 1;
+                    user === null || user === void 0 ? void 0 : user.argDislikes.splice(likesId);
+                    yield __1.conn.manager.save(User_1.User, user);
+                    yield __1.conn.manager.save(Argument_1.Argument, argument);
+                    return { argument };
+                }
+                argument.ranking += dir;
+                (_h = user === null || user === void 0 ? void 0 : user.argDislikes) === null || _h === void 0 ? void 0 : _h.push(inputs.targetId);
+                yield __1.conn.manager.save(User_1.User, user);
+                yield __1.conn.manager.save(Argument_1.Argument, argument);
+                return { argument };
+            }
+            else {
+                return {
+                    errors: [{ field: "direction", error: "Invalid direction" }],
+                };
+            }
+        });
+    }
 }
 __decorate([
     (0, type_graphql_1.Mutation)(() => anArgumentResponse),
@@ -157,5 +231,13 @@ __decorate([
     __metadata("design:paramtypes", [createArgumentInput, Object]),
     __metadata("design:returntype", Promise)
 ], ArgumentResolver.prototype, "createArgument", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => anArgumentResponse),
+    __param(0, (0, type_graphql_1.Arg)("inputs")),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [types_1.rateInput, Object]),
+    __metadata("design:returntype", Promise)
+], ArgumentResolver.prototype, "rateArgument", null);
 exports.ArgumentResolver = ArgumentResolver;
 //# sourceMappingURL=argument.js.map

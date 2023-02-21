@@ -10,7 +10,12 @@ import {
   Resolver,
 } from "type-graphql";
 import { Post } from "../entities/Post";
-import { FieldError, MyContext, OperationFieldResponse } from "../types";
+import {
+  FieldError,
+  MyContext,
+  OperationFieldResponse,
+  rateInput,
+} from "../types";
 import { verifyUser } from "../utils/verifyUser";
 import { User } from "../entities/User";
 import { orderSwitch, outputTopics } from "../utils/paginated Utils";
@@ -26,14 +31,6 @@ class postsInput {
   scrolledDown: number;
   @Field(() => [String])
   sortBy: string[];
-}
-
-@InputType()
-class rateInput {
-  @Field()
-  postId!: number;
-  @Field()
-  direction!: string;
 }
 
 @InputType()
@@ -117,7 +114,6 @@ export class PostResolver {
 
     // if there are no topics in inputs, include all topics in query so dont add var.
     if (typeof inputs.topics !== undefined && inputs.topics?.length!) {
-      console.log("bad");
       repoVar.where = outputTopics(inputs.topics!);
     }
 
@@ -193,9 +189,8 @@ export class PostResolver {
     }
     let user = userOrError.user;
 
-    console.log("what");
     let post = await conn.manager.findOne(Post, {
-      where: { id: inputs.postId },
+      where: { id: inputs.targetId },
     });
     if (!post) {
       return {
@@ -206,7 +201,7 @@ export class PostResolver {
     let dir = 0;
     if (inputs.direction == "up") {
       dir = 1;
-      let likesId = user!.likes?.indexOf(inputs.postId);
+      let likesId = user!.likes?.indexOf(inputs.targetId);
       if (likesId! > -1) {
         post.ranking -= 1;
         user?.likes!.splice(likesId!);
@@ -214,32 +209,32 @@ export class PostResolver {
         await conn.manager.save(Post, post);
         return { post };
       }
-      let dislikesId = user!.dislikes?.indexOf(inputs.postId);
+      let dislikesId = user!.dislikes?.indexOf(inputs.targetId);
       if (dislikesId! > -1) {
         post.ranking += 2;
         user?.dislikes!.splice(likesId!);
-        user?.likes?.push(inputs.postId);
+        user?.likes?.push(inputs.targetId);
         await conn.manager.save(User, user!);
         await conn.manager.save(Post, post);
         return { post };
       }
       post.ranking += dir;
-      user?.likes?.push(inputs.postId);
+      user?.likes?.push(inputs.targetId);
       await conn.manager.save(User, user!);
       await conn.manager.save(Post, post);
       return { post };
     } else if (inputs.direction == "down") {
       dir = -1;
-      let likesId = user!.likes?.indexOf(inputs.postId);
+      let likesId = user!.likes?.indexOf(inputs.targetId);
       if (likesId! > -1) {
         post.ranking -= 2;
         user?.likes!.splice(likesId!);
-        user?.dislikes?.push(inputs.postId);
+        user?.dislikes?.push(inputs.targetId);
         await conn.manager.save(User, user!);
         await conn.manager.save(Post, post);
         return { post };
       }
-      let dislikesId = user!.dislikes?.indexOf(inputs.postId);
+      let dislikesId = user!.dislikes?.indexOf(inputs.targetId);
       if (dislikesId! > -1) {
         post.ranking += 1;
         user?.dislikes!.splice(likesId!);
@@ -248,7 +243,7 @@ export class PostResolver {
         return { post };
       }
       post.ranking += dir;
-      user?.dislikes?.push(inputs.postId);
+      user?.dislikes?.push(inputs.targetId);
       await conn.manager.save(User, user!);
       await conn.manager.save(Post, post);
       return { post };

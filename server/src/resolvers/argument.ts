@@ -10,7 +10,7 @@ import {
   Resolver,
 } from "type-graphql";
 import { Post } from "../entities/Post";
-import { FieldError, MyContext } from "../types";
+import { FieldError, MyContext, rateInput } from "../types";
 import { conn } from "..";
 import { User } from "../entities/User";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -144,5 +144,81 @@ export class ArgumentResolver {
     }
 
     return { argument: <Argument>(<unknown>argument) };
+  }
+
+  @Mutation(() => anArgumentResponse)
+  async rateArgument(
+    @Arg("inputs") inputs: rateInput,
+    @Ctx() { req }: MyContext
+  ): Promise<anArgumentResponse> {
+    let userOrError = await verifyUser(req.headers["authorization"]!);
+    if (userOrError.errors) {
+      return { errors: userOrError.errors };
+    }
+    let user = userOrError.user;
+
+    let argument = await conn.manager.findOne(Argument, {
+      where: { id: inputs.targetId },
+    });
+    if (!argument) {
+      return {
+        errors: [{ field: "targetId", error: "Argument doesn't exist" }],
+      };
+    }
+
+    let dir = 0;
+    if (inputs.direction == "up") {
+      dir = 1;
+      let likesId = user!.argLikes?.indexOf(inputs.targetId);
+      if (likesId! > -1) {
+        argument.ranking -= 1;
+        user?.argLikes!.splice(likesId!);
+        await conn.manager.save(User, user!);
+        await conn.manager.save(Argument, argument);
+        return { argument };
+      }
+      let dislikesId = user!.argDislikes?.indexOf(inputs.targetId);
+      if (dislikesId! > -1) {
+        argument.ranking += 2;
+        user?.argDislikes!.splice(likesId!);
+        user?.argLikes?.push(inputs.targetId);
+        await conn.manager.save(User, user!);
+        await conn.manager.save(Argument, argument);
+        return { argument };
+      }
+      argument.ranking += dir;
+      user?.argLikes?.push(inputs.targetId);
+      await conn.manager.save(User, user!);
+      await conn.manager.save(Argument, argument);
+      return { argument };
+    } else if (inputs.direction == "down") {
+      dir = -1;
+      let likesId = user!.argLikes?.indexOf(inputs.targetId);
+      if (likesId! > -1) {
+        argument.ranking -= 2;
+        user?.argLikes!.splice(likesId!);
+        user?.argDislikes?.push(inputs.targetId);
+        await conn.manager.save(User, user!);
+        await conn.manager.save(Argument, argument);
+        return { argument };
+      }
+      let dislikesId = user!.argDislikes?.indexOf(inputs.targetId);
+      if (dislikesId! > -1) {
+        argument.ranking += 1;
+        user?.argDislikes!.splice(likesId!);
+        await conn.manager.save(User, user!);
+        await conn.manager.save(Argument, argument);
+        return { argument };
+      }
+      argument.ranking += dir;
+      user?.argDislikes?.push(inputs.targetId);
+      await conn.manager.save(User, user!);
+      await conn.manager.save(Argument, argument);
+      return { argument };
+    } else {
+      return {
+        errors: [{ field: "direction", error: "Invalid direction" }],
+      };
+    }
   }
 }

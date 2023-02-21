@@ -206,6 +206,3 @@ export class UserResolver {
     return { success: true };
   }
 }
-function validateLogin(inputs: loginInput) {
-  throw new Error("Function not implemented.");
-}

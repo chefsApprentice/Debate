@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OperationFieldResponse = exports.FieldError = void 0;
+exports.rateInput = exports.OperationFieldResponse = exports.FieldError = void 0;
 const type_graphql_1 = require("type-graphql");
 let FieldError = class FieldError {
 };
@@ -39,4 +39,18 @@ OperationFieldResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], OperationFieldResponse);
 exports.OperationFieldResponse = OperationFieldResponse;
+let rateInput = class rateInput {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], rateInput.prototype, "targetId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], rateInput.prototype, "direction", void 0);
+rateInput = __decorate([
+    (0, type_graphql_1.InputType)()
+], rateInput);
+exports.rateInput = rateInput;
 //# sourceMappingURL=types.js.map

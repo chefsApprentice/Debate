@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Field, ObjectType } from "type-graphql";
+import { Field, InputType, ObjectType } from "type-graphql";
 
 export type MyContext = {
   req: Request;
@@ -20,4 +20,12 @@ export class OperationFieldResponse {
   errors?: FieldError[];
   @Field()
   operation?: string;
+}
+
+@InputType()
+export class rateInput {
+  @Field()
+  targetId!: number;
+  @Field()
+  direction!: string;
 }

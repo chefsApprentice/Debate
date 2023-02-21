@@ -258,7 +258,4 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "logout", null);
 exports.UserResolver = UserResolver;
-function validateLogin(inputs) {
-    throw new Error("Function not implemented.");
-}
 //# sourceMappingURL=user.js.map
