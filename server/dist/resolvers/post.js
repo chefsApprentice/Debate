@@ -115,12 +115,9 @@ class PostResolver {
             return posts;
         });
     }
-    paginatedPosts(inputs, { res }) {
+    paginatedPosts(inputs) {
         return __awaiter(this, void 0, void 0, function* () {
             let order = (0, paginated_Utils_1.orderSwitch)(inputs.sortBy[0], inputs.sortBy[1]);
-            if (order === null || order === void 0 ? void 0 : order.error) {
-                return { errors: [order] };
-            }
             const selectionAmount = 25;
             let skip = inputs.scrolledDown * selectionAmount;
             const postRepo = index_1.conn.getRepository(Post_1.Post);
@@ -163,14 +160,8 @@ class PostResolver {
         });
     }
     ratePost(inputs, { req }) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!req.headers["authorization"]) {
-                return {
-                    errors: [{ field: "user", error: "User not logged in" }],
-                    success: false,
-                };
-            }
             let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
             if (typeof user.errors == undefined) {
                 return { errors: user.errors, success: false };
@@ -186,19 +177,19 @@ class PostResolver {
             }
             let dir = 0;
             if (inputs.direction == "up") {
-                dir += 1;
-                let postId = (_b = (_a = user.user) === null || _a === void 0 ? void 0 : _a.likes) === null || _b === void 0 ? void 0 : _b.find((e) => e == inputs.postId);
-                if (postId != undefined) {
-                    console.log("post id", postId);
+                dir = 1;
+                let likesId = (_a = user.user.likes) === null || _a === void 0 ? void 0 : _a.indexOf(inputs.postId);
+                if (likesId > -1) {
+                    post.ranking -= 1;
+                    (_b = user.user) === null || _b === void 0 ? void 0 : _b.likes.splice(likesId);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
                 }
-                else {
-                    console.log("aww shucks");
-                }
-                (_d = (_c = user.user) === null || _c === void 0 ? void 0 : _c.likes) === null || _d === void 0 ? void 0 : _d.push(inputs.postId);
+                let dislikesId = (_d = (_c = user.user) === null || _c === void 0 ? void 0 : _c.dislikes) === null || _d === void 0 ? void 0 : _d.find((e) => e == inputs.postId);
+                (_f = (_e = user.user) === null || _e === void 0 ? void 0 : _e.likes) === null || _f === void 0 ? void 0 : _f.push(inputs.postId);
             }
             else if (inputs.direction == "down") {
-                dir -= 1;
-                (_f = (_e = user.user) === null || _e === void 0 ? void 0 : _e.dislikes) === null || _f === void 0 ? void 0 : _f.push(inputs.postId);
+                dir = -1;
+                (_h = (_g = user.user) === null || _g === void 0 ? void 0 : _g.dislikes) === null || _h === void 0 ? void 0 : _h.push(inputs.postId);
             }
             else {
                 return {
@@ -224,9 +215,8 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => postsResponse),
     __param(0, (0, type_graphql_1.Arg)("inputs")),
-    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [postsInput, Object]),
+    __metadata("design:paramtypes", [postsInput]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "paginatedPosts", null);
 __decorate([

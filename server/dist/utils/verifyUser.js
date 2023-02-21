@@ -17,6 +17,11 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = require("../entities/User");
 const index_1 = require("../index");
 const verifyUser = (authHeader) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!authHeader) {
+        return {
+            errors: [{ field: "user", error: "User not logged in" }],
+        };
+    }
     try {
         let userId = (jsonwebtoken_1.default.verify(authHeader, process.env.HASH_JWT));
         let user = yield index_1.conn.manager.findOneBy(User_1.User, {

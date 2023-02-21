@@ -37,6 +37,11 @@ __decorate([
     __metadata("design:type", String)
 ], Argument.prototype, "title", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Argument.prototype, "type", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => [String]),
     (0, typeorm_1.Column)("text", { array: true }),
     __metadata("design:type", Array)

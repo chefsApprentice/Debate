@@ -73,31 +73,35 @@ export class PostResolver {
     return posts;
   }
 
+  // Customsiable inputs for continously loading posts in a paginated way
   @Query(() => postsResponse)
   async paginatedPosts(
-    @Arg("inputs") inputs: postsInput,
-    @Ctx() { res }: MyContext
+    @Arg("inputs") inputs: postsInput
   ): Promise<postsResponse> {
+    // Turn order variables from string to whitelisted dictionairy using switch func
     let order = orderSwitch(inputs.sortBy[0], inputs.sortBy[1]);
-    if (order?.error) {
-      return { errors: [order] };
-    }
+    // The amount of posts selected by each query
     const selectionAmount = 25;
     let skip = inputs.scrolledDown * selectionAmount;
-    const postRepo = conn.getRepository(Post);
 
+    const postRepo = conn.getRepository(Post);
+    // Variables for query
     let repoVar: any = {
       skip,
       take: selectionAmount,
+      // using the order variable, ensuring it is in the correct type
       order: <FindOptionsOrder<Post>>order!,
+      // Allows graphQL to select user data, in this case only username
       relations: {
         user: true,
       },
     };
 
+    // if there are no topics in inputs, include all topics in query so dont add var.
     typeof inputs.topics !== undefined &&
       (repoVar.where = outputTopics(inputs.topics!));
 
+    // __ means unused var, as we do not need to know how many posts match
     const [posts, __]: [Post[], number] = await postRepo.findAndCount(repoVar);
     return {
       posts: posts!,
@@ -139,15 +143,7 @@ export class PostResolver {
     @Arg("inputs") inputs: rateInput,
     @Ctx() { req }: MyContext
   ): Promise<SuccessFieldResponse> {
-    if (!req.headers["authorization"]) {
-      return {
-        errors: [{ field: "user", error: "User not logged in" }],
-        success: false,
-      };
-    }
-
     let user = await verifyUser(req.headers["authorization"]!);
-    // I think we need yo update verify suer to include the undeifned case so taht way we still get errors
     if (typeof user.errors == undefined) {
       return { errors: user.errors, success: false };
     }
@@ -165,19 +161,11 @@ export class PostResolver {
     let dir = 0;
     if (inputs.direction == "up") {
       dir = 1;
-      // not scaleable
-      //check if this works
       let likesId = user.user!.likes?.indexOf(inputs.postId);
       if (likesId! > -1) {
         post.ranking -= 1;
         user.user?.likes!.splice(likesId!);
         await conn.manager.save(Post, post);
-        // return {
-        //   errors: [
-        //     { field: "direction", error: "You have already liked this post." },
-        //   ],
-        //   success: false,
-        // };
       }
       let dislikesId = user.user?.dislikes?.find((e) => e == inputs.postId);
       user.user?.likes?.push(inputs.postId);

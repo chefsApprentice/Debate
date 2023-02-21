@@ -12,15 +12,19 @@ const outputTopics = (topicsArr) => {
 exports.outputTopics = outputTopics;
 const orderSwitch = (orderName, orderBy) => {
     if (orderBy != "asc" && orderBy != "desc") {
-        return { field: "orderBy", error: "Not proper order by message" };
+        orderBy = "asc";
     }
     switch (orderName) {
         case "newest":
             return { date_created: orderBy };
-        case "rating":
-            return { rating: orderBy };
+        case "ranking":
+            return { ranking: orderBy };
+        case "arguments":
+            return { arguments: orderBy };
+        case "id":
+            return { id: orderBy };
         default:
-            return { general: orderBy };
+            return { last_modified: orderBy };
     }
 };
 exports.orderSwitch = orderSwitch;

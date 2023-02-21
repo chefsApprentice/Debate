@@ -46,6 +46,14 @@ export class User extends BaseEntity {
   @Column("int", { array: true, nullable: true })
   dislikes?: number[];
 
+  @Field(() => [Number])
+  @Column("int", { array: true, nullable: true })
+  argLikes?: number[];
+
+  @Field(() => [Number])
+  @Column("int", { array: true, nullable: true })
+  argDislikes?: number[];
+
   @Field(() => String)
   @CreateDateColumn()
   date_created: Date;

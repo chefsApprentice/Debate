@@ -154,14 +154,17 @@ class UserResolver {
             newUser.email = inputs.email;
             newUser.username = inputs.username;
             newUser.password = hashedPassword;
-            newUser.likes = [];
-            newUser.dislikes = [];
             yield index_1.conn.manager.save(newUser);
             return { user: newUser };
         });
     }
-    login(inputs, { res }) {
+    login(inputs, { res, req }) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (req.headers["authorization"]) {
+                return {
+                    errors: [{ field: "token", error: "You are already logged in" }],
+                };
+            }
             let user = yield index_1.conn.manager.findOneBy(User_1.User, inputs.usernameOrEmail.includes("@")
                 ? { email: inputs.usernameOrEmail }
                 : { username: inputs.usernameOrEmail });
