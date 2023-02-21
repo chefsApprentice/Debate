@@ -60,7 +60,7 @@ __decorate([
     (0, type_graphql_1.Field)(() => [Number]),
     (0, typeorm_1.Column)("int", { array: true }),
     __metadata("design:type", Array)
-], Argument.prototype, "References", void 0);
+], Argument.prototype, "references", void 0);
 Argument = __decorate([
     (0, type_graphql_1.ObjectType)(),
     (0, typeorm_1.Entity)()

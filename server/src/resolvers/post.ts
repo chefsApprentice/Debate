@@ -35,6 +35,7 @@ class rateInput {
   @Field()
   direction!: string;
 }
+
 @InputType()
 class createPostInput {
   @Field()
@@ -44,6 +45,22 @@ class createPostInput {
   @Field()
   description: string;
 }
+
+@InputType()
+class postIdClass {
+  @Field()
+  postId!: number;
+}
+
+// @InputType()
+// class argumentsTypedInputs {
+//   @Field()
+//   postId: number;
+//   @Field()
+//   type: string;
+//   @Field()
+//   cursor: number;
+// }
 
 @ObjectType()
 class postsResponse {
@@ -111,6 +128,19 @@ export class PostResolver {
     };
   }
 
+  @Query(() => aPostResponse)
+  async fetchPost(@Arg("inputs") postId: postIdClass) {
+    const postRepo = conn.getRepository(Post);
+    const post = await postRepo.findOne({
+      where: { id: postId.postId },
+      relations: {
+        user: true,
+        arguments: { user: true },
+      },
+    });
+    return { post };
+  }
+
   @Mutation(() => aPostResponse)
   async createPost(
     @Arg("inputs") inputs: createPostInput,
@@ -146,9 +176,7 @@ export class PostResolver {
     let post = await postRepo.save(postRepo.create(newPost));
 
     // let post = await conn.manager.save(Post, newPost);
-    console.log("post:", post);
     user!.posts?.push(<Post>(<unknown>post));
-
     await userRepo.save(user!);
 
     return { post: <Post>(<unknown>post) };

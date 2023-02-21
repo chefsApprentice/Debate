@@ -47,5 +47,5 @@ export class Argument extends BaseEntity {
 
   @Field(() => [Number])
   @Column("int", { array: true })
-  References: number[];
+  references: number[];
 }

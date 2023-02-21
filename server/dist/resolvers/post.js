@@ -81,6 +81,15 @@ __decorate([
 createPostInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], createPostInput);
+let postIdClass = class postIdClass {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], postIdClass.prototype, "postId", void 0);
+postIdClass = __decorate([
+    (0, type_graphql_1.InputType)()
+], postIdClass);
 let postsResponse = class postsResponse {
 };
 __decorate([
@@ -144,6 +153,19 @@ class PostResolver {
             };
         });
     }
+    fetchPost(postId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const postRepo = index_1.conn.getRepository(Post_1.Post);
+            const post = yield postRepo.findOne({
+                where: { id: postId.postId },
+                relations: {
+                    user: true,
+                    arguments: { user: true },
+                },
+            });
+            return { post };
+        });
+    }
     createPost(inputs, { req }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -167,7 +189,6 @@ class PostResolver {
             };
             let postRepo = yield index_1.conn.getRepository(Post_1.Post);
             let post = yield postRepo.save(postRepo.create(newPost));
-            console.log("post:", post);
             (_a = user.posts) === null || _a === void 0 ? void 0 : _a.push(post);
             yield userRepo.save(user);
             return { post: post };
@@ -262,6 +283,13 @@ __decorate([
     __metadata("design:paramtypes", [postsInput]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "paginatedPosts", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => aPostResponse),
+    __param(0, (0, type_graphql_1.Arg)("inputs")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [postIdClass]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "fetchPost", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => aPostResponse),
     __param(0, (0, type_graphql_1.Arg)("inputs")),

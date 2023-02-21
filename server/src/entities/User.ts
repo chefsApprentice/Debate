@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from "typeorm";
+import { Argument } from "./Argument";
 import { Post } from "./Post";
 
 @ObjectType()
@@ -37,6 +38,10 @@ export class User extends BaseEntity {
   @Field(() => [Post])
   @OneToMany(() => Post, (post) => post.user)
   posts?: Post[];
+
+  @Field(() => [Argument])
+  @OneToMany(() => Argument, (argument) => argument.user)
+  arguments?: Argument[];
 
   @Field(() => [Number], { nullable: true })
   @Column("int", { array: true, nullable: true })
