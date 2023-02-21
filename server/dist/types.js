@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SuccessFieldResponse = exports.FieldError = void 0;
+exports.OperationFieldResponse = exports.FieldError = void 0;
 const type_graphql_1 = require("type-graphql");
 let FieldError = class FieldError {
 };
@@ -25,18 +25,18 @@ FieldError = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], FieldError);
 exports.FieldError = FieldError;
-let SuccessFieldResponse = class SuccessFieldResponse {
+let OperationFieldResponse = class OperationFieldResponse {
 };
 __decorate([
     (0, type_graphql_1.Field)(() => [FieldError], { nullable: true }),
     __metadata("design:type", Array)
-], SuccessFieldResponse.prototype, "errors", void 0);
+], OperationFieldResponse.prototype, "errors", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", Boolean)
-], SuccessFieldResponse.prototype, "success", void 0);
-SuccessFieldResponse = __decorate([
+    (0, type_graphql_1.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], OperationFieldResponse.prototype, "operation", void 0);
+OperationFieldResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
-], SuccessFieldResponse);
-exports.SuccessFieldResponse = SuccessFieldResponse;
+], OperationFieldResponse);
+exports.OperationFieldResponse = OperationFieldResponse;
 //# sourceMappingURL=types.js.map

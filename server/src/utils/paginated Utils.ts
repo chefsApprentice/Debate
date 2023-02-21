@@ -14,8 +14,8 @@ export const orderSwitch = (orderName: string, orderBy: string) => {
   switch (orderName) {
     case "newest":
       return { date_created: orderBy };
-    case "rating":
-      return { rating: orderBy };
+    case "ranking":
+      return { ranking: orderBy };
     default:
       return { general: orderBy };
   }

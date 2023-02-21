@@ -26,10 +26,6 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email!: string;
 
-  // @Field()
-  // @Column()
-  // token: string;
-
   //no field property, so graphql cannot select it
   @Column()
   password!: string;
@@ -38,13 +34,21 @@ export class User extends BaseEntity {
   @OneToMany(() => Post, (post) => post.user)
   posts?: Post[];
 
-  @Field()
-  @Column()
+  @Field(() => [Number], { nullable: true })
+  @Column("int", { array: true, nullable: true })
   likes?: number[];
 
-  @Field()
-  @Column()
+  @Field(() => [Number], { nullable: true })
+  @Column("int", { array: true, nullable: true })
   dislikes?: number[];
+
+  @Field(() => [Number], { nullable: true })
+  @Column("int", { array: true, nullable: true })
+  argLikes?: number[];
+
+  @Field(() => [Number], { nullable: true })
+  @Column("int", { array: true, nullable: true })
+  argDislikes?: number[];
 
   @Field(() => String)
   @CreateDateColumn()

@@ -27,6 +27,7 @@ const User_1 = require("./entities/User");
 const Post_1 = require("./entities/Post");
 const Argument_1 = require("./entities/Argument");
 const post_1 = require("./resolvers/post");
+const argument_1 = require("./resolvers/argument");
 dotenv_1.default.config();
 const port = process.env.PORT;
 const conn = new typeorm_1.DataSource({
@@ -53,7 +54,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     app.use((0, cookie_parser_1.default)());
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield (0, type_graphql_1.buildSchema)({
-            resolvers: [user_1.UserResolver, post_1.PostResolver],
+            resolvers: [user_1.UserResolver, post_1.PostResolver, argument_1.ArgumentResolver],
             validate: true,
         }),
         context: ({ req, res }) => ({

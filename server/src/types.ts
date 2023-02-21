@@ -15,9 +15,9 @@ export class FieldError {
 }
 
 @ObjectType()
-export class SuccessFieldResponse {
+export class OperationFieldResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
-  @Field()
-  success!: boolean;
+  @Field(() => String, { nullable: true })
+  operation?: string;
 }

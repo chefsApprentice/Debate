@@ -149,9 +149,13 @@ export class UserResolver {
   @Mutation(() => userResponse)
   async login(
     @Arg("inputs") inputs: loginInput,
-    @Ctx() { res }: MyContext
+    @Ctx() { res, req }: MyContext
   ): Promise<userResponse> {
-    // let errors = validateLogin(inputs);
+    if (req.headers["authorization"]!) {
+      return {
+        errors: [{ field: "token", error: "You are already logged in" }],
+      };
+    }
 
     let user = await conn.manager.findOneBy(
       User,
@@ -204,4 +208,7 @@ export class UserResolver {
     res.clearCookie("uid");
     return { success: true };
   }
+}
+function validateLogin(inputs: loginInput) {
+  throw new Error("Function not implemented.");
 }

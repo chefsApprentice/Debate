@@ -121,19 +121,20 @@ class PostResolver {
             if (order === null || order === void 0 ? void 0 : order.error) {
                 return { errors: [order] };
             }
-            const selectionAmount = 25;
+            const selectionAmount = 3;
             let skip = inputs.scrolledDown * selectionAmount;
             const postRepo = index_1.conn.getRepository(Post_1.Post);
-            const [posts, __] = yield postRepo.findAndCount({
+            let repoVar = {
                 skip,
                 take: selectionAmount,
-                where: (0, paginated_Utils_1.outputTopics)(inputs.topics),
                 order: order,
                 relations: {
                     user: true,
                 },
-            });
-            console.log("posts:", posts);
+            };
+            typeof inputs.topics !== undefined &&
+                (repoVar.where = (0, paginated_Utils_1.outputTopics)(inputs.topics));
+            const [posts, __] = yield postRepo.findAndCount(repoVar);
             return {
                 posts: posts,
             };
@@ -142,9 +143,6 @@ class PostResolver {
     createPost(inputs, { req }) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!req.headers["authorization"]) {
-                return { errors: [{ field: "user", error: "User not logged in" }] };
-            }
             let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
             if (typeof user.errors == undefined) {
                 return { errors: user.errors };
@@ -162,23 +160,16 @@ class PostResolver {
         });
     }
     ratePost(inputs, { req }) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         return __awaiter(this, void 0, void 0, function* () {
+            if (!req.headers["authorization"]) {
+                return {
+                    errors: [{ field: "user", error: "User not logged in" }],
+                };
+            }
             let user = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
             if (typeof user.errors == undefined) {
-                return { errors: user.errors, success: false };
-            }
-            let dir = 0;
-            if (inputs.direction == "up") {
-                dir += 1;
-            }
-            else if (inputs.direction == "down") {
-                dir -= 1;
-            }
-            else {
-                return {
-                    errors: [{ field: "direction", error: "Invalid direction" }],
-                    success: false,
-                };
+                return { errors: user.errors };
             }
             let post = yield index_1.conn.manager.findOne(Post_1.Post, {
                 where: { id: inputs.postId },
@@ -186,13 +177,86 @@ class PostResolver {
             if (!post) {
                 return {
                     errors: [{ field: "post_id", error: "Post doesn't exist" }],
-                    success: false,
                 };
             }
-            post.ranking += dir;
-            yield index_1.conn.manager.save(Post_1.Post, post);
+            let dir = 0;
+            if (inputs.direction == "up") {
+                dir = 1;
+                let likesId = (_a = user.user.likes) === null || _a === void 0 ? void 0 : _a.indexOf(inputs.postId);
+                if (likesId > -1) {
+                    dir = -1;
+                    console.log("1  ");
+                    post.ranking += dir;
+                    (_b = user.user) === null || _b === void 0 ? void 0 : _b.likes.splice(likesId);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    yield index_1.conn.manager.save(User_1.User, user.user);
+                    return {
+                        operation: "unliked",
+                    };
+                }
+                let dislikesId = (_d = (_c = user.user) === null || _c === void 0 ? void 0 : _c.dislikes) === null || _d === void 0 ? void 0 : _d.indexOf(inputs.postId);
+                if (dislikesId > -1) {
+                    dir = +2;
+                    post.ranking += dir;
+                    (_e = user.user) === null || _e === void 0 ? void 0 : _e.dislikes.splice(dislikesId);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    yield index_1.conn.manager.save(User_1.User, user.user);
+                    return {
+                        operation: "liked",
+                    };
+                }
+                post.ranking += dir;
+                try {
+                    (_f = user.user) === null || _f === void 0 ? void 0 : _f.likes.push(inputs.postId);
+                }
+                catch (_o) {
+                    user.user.likes = [inputs.postId];
+                }
+                yield index_1.conn.manager.save(Post_1.Post, post);
+                yield index_1.conn.manager.save(User_1.User, user.user);
+                return {
+                    operation: "liked",
+                };
+            }
+            else if (inputs.direction == "down") {
+                dir = -1;
+                let dislikesId = (_h = (_g = user.user) === null || _g === void 0 ? void 0 : _g.dislikes) === null || _h === void 0 ? void 0 : _h.indexOf(inputs.postId);
+                if (dislikesId > -1) {
+                    dir = +1;
+                    post.ranking += dir;
+                    (_j = user.user) === null || _j === void 0 ? void 0 : _j.dislikes.splice(dislikesId);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    yield index_1.conn.manager.save(User_1.User, user.user);
+                    return {
+                        operation: "undisliked",
+                    };
+                }
+                let likesId = (_k = user.user.likes) === null || _k === void 0 ? void 0 : _k.indexOf(inputs.postId);
+                if (likesId > -1) {
+                    dir = -2;
+                    post.ranking += dir;
+                    (_l = user.user) === null || _l === void 0 ? void 0 : _l.likes.splice(likesId);
+                    yield index_1.conn.manager.save(Post_1.Post, post);
+                    yield index_1.conn.manager.save(User_1.User, user.user);
+                    return {
+                        operation: "dislked",
+                    };
+                }
+                post.ranking += dir;
+                try {
+                    (_m = user.user) === null || _m === void 0 ? void 0 : _m.dislikes.push(inputs.postId);
+                }
+                catch (_p) {
+                    user.user.dislikes = [inputs.postId];
+                }
+                yield index_1.conn.manager.save(Post_1.Post, post);
+                yield index_1.conn.manager.save(User_1.User, user.user);
+                return {
+                    operation: "disliked",
+                };
+            }
             return {
-                success: true,
+                errors: [{ field: "direction", error: "Invalid direction" }],
             };
         });
     }
@@ -220,7 +284,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => types_1.SuccessFieldResponse),
+    (0, type_graphql_1.Mutation)(() => types_1.OperationFieldResponse),
     __param(0, (0, type_graphql_1.Arg)("inputs")),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
