@@ -10,8 +10,8 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
   return (
     <nav className="flex items-center justify-between flex-wrap bg-white-500 p-6 border-indigo-300 border-b">
       <div className="flex items-center flex-shrink-0 text-indigo-300 mr-6">
-        <button
-          type="button"
+        <a
+          href="/"
           className="text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
           // text-white-300 border border-white-300 hover:bg-white-300 hover:text-white focus:ring-4 focus:outline-none focus:ring-white-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-white-500 dark:text-white-500 dark:hover:text-white dark:focus:ring--400"
         >
@@ -30,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
             />
           </svg>
           <span className="sr-only">Home button</span>
-        </button>
+        </a>
       </div>
       <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
         <div className="text-sm lg:flex-grow">
