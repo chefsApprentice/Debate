@@ -77,6 +77,20 @@ export class ArgumentResolver {
       return { errors: userOrError.errors };
     }
 
+    // Verify inputs
+    switch (inputs.type) {
+      case "for":
+        break;
+      case "against":
+        break;
+      case "rejoinder":
+        break;
+      default:
+        return {
+          errors: [{ field: "type", error: "Not one of the accepted types" }],
+        };
+    }
+
     let userId: JwtPayload = <JwtPayload>(
       await jwt.verify(req.headers["authorization"]!, process.env.HASH_JWT!)
     );
@@ -145,6 +159,11 @@ export class ArgumentResolver {
 
     return { argument: <Argument>(<unknown>argument) };
   }
+
+  // could add the ability to update and reference other args,
+  // but this is done in the create anyway soooo
+  // @Mutation(() => argumentsResponse)
+  // async referenceArgument
 
   @Mutation(() => anArgumentResponse)
   async rateArgument(
