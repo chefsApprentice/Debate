@@ -101,7 +101,7 @@ export class ArgumentResolver {
     @Ctx() { req }: MyContext
   ): Promise<anArgumentResponse> {
     let userOrError = await verifyUser(req.headers["authorization"]!);
-    if (typeof userOrError.errors == undefined) {
+    if (userOrError.errors) {
       return { errors: userOrError.errors };
     }
 
@@ -166,6 +166,7 @@ export class ArgumentResolver {
         where: { id: inputs.references[i] },
       });
       if (!referencedArg) {
+        console.log("hit");
         let errorString =
           "argument of id: " +
           <string>(<unknown>inputs.references[i]) +
@@ -174,7 +175,9 @@ export class ArgumentResolver {
           field: "references",
           error: errorString,
         });
+        continue;
       }
+
       referencedArg!.referencedBy.push((<Argument>(<unknown>argument!)).id);
       argumentRepo.save(referencedArg!);
     }

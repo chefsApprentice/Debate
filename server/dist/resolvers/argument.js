@@ -59,6 +59,15 @@ createArgumentInput = __decorate([
     (0, type_graphql_1.Resolver)(Argument_1.Argument),
     (0, type_graphql_1.InputType)()
 ], createArgumentInput);
+let argumentIdClass = class argumentIdClass {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], argumentIdClass.prototype, "argId", void 0);
+argumentIdClass = __decorate([
+    (0, type_graphql_1.InputType)()
+], argumentIdClass);
 let anArgumentResponse = class anArgumentResponse {
 };
 __decorate([
@@ -83,12 +92,42 @@ __decorate([
     __metadata("design:type", Array)
 ], argumentsResponse.prototype, "arguments", void 0);
 class ArgumentResolver {
+    fetchArgument(inputs) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const argRepo = __1.conn.getRepository(Argument_1.Argument);
+            const argument = yield argRepo.findOne({
+                where: { id: inputs.argId },
+                relations: {
+                    user: true,
+                    post: { user: true },
+                },
+            });
+            if (!argument) {
+                return {
+                    errors: [{ field: "argId", error: "That argument doesn't exist" }],
+                };
+            }
+            return { argument };
+        });
+    }
     createArgument(inputs, { req }) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             let userOrError = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
-            if (typeof userOrError.errors == undefined) {
+            if (userOrError.errors) {
                 return { errors: userOrError.errors };
+            }
+            switch (inputs.type) {
+                case "for":
+                    break;
+                case "against":
+                    break;
+                case "rejoinder":
+                    break;
+                default:
+                    return {
+                        errors: [{ field: "type", error: "Not one of the accepted types" }],
+                    };
             }
             let userId = (yield jsonwebtoken_1.default.verify(req.headers["authorization"], process.env.HASH_JWT));
             let userRepo = yield __1.conn.getRepository(User_1.User);
@@ -128,6 +167,7 @@ class ArgumentResolver {
                     where: { id: inputs.references[i] },
                 });
                 if (!referencedArg) {
+                    console.log("hit");
                     let errorString = "argument of id: " +
                         inputs.references[i] +
                         " doesn't exist.";
@@ -135,6 +175,7 @@ class ArgumentResolver {
                         field: "references",
                         error: errorString,
                     });
+                    continue;
                 }
                 referencedArg.referencedBy.push(argument.id);
                 argumentRepo.save(referencedArg);
@@ -223,6 +264,13 @@ class ArgumentResolver {
         });
     }
 }
+__decorate([
+    (0, type_graphql_1.Query)(() => anArgumentResponse),
+    __param(0, (0, type_graphql_1.Arg)("inputs")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [argumentIdClass]),
+    __metadata("design:returntype", Promise)
+], ArgumentResolver.prototype, "fetchArgument", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => anArgumentResponse),
     __param(0, (0, type_graphql_1.Arg)("inputs")),
