@@ -31,6 +31,12 @@ class createArgumentInput {
   postId: number;
 }
 
+@InputType()
+class argumentIdClass {
+  @Field()
+  argId!: number;
+}
+
 // @InputType()
 // class argumentsTypedInputs {
 //   @Field()
@@ -48,13 +54,35 @@ class anArgumentResponse {
   @Field(() => Argument, { nullable: true })
   argument?: Argument;
 }
+
 class argumentsResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
   @Field(() => [Argument], { nullable: true })
   arguments?: Argument[];
 }
+
 export class ArgumentResolver {
+  @Query(() => anArgumentResponse)
+  async fetchArgument(
+    @Arg("inputs") inputs: argumentIdClass
+  ): Promise<anArgumentResponse> {
+    const argRepo = conn.getRepository(Argument);
+    const argument = await argRepo.findOne({
+      where: { id: inputs.argId },
+      relations: {
+        user: true,
+        post: { user: true },
+      },
+    });
+    if (!argument) {
+      return {
+        errors: [{ field: "argId", error: "That argument doesn't exist" }],
+      };
+    }
+    return { argument };
+  }
+
   //   @Query(() => argumentsResponse)
   //   async argumentsTyped(
   //     @Arg("inputs") inputs: argumentsTypedInputs

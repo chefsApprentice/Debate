@@ -134,6 +134,11 @@ export class PostResolver {
         arguments: { user: true },
       },
     });
+    if (!post) {
+      return {
+        errors: [{ field: "postId", error: "That post doesn't exist" }],
+      };
+    }
     return { post };
   }
 
