@@ -2,7 +2,8 @@
 
 School debate
 
-##Prerequisites
+## Prerequisites
+
 Have Postgres installed with a schema named debateSchema
 Have node isntalled
 Update the server environemnt varibles with your own
