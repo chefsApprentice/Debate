@@ -1,4 +1,8 @@
-export const Ranking = () => {
+interface RankingProps {
+  ranking: number;
+}
+
+export const Ranking: React.FC<RankingProps> = (ranking) => {
   return (
     <nav className="flex items-center justify-left flex-wrap bg-white-500 mt-2">
       <button className=" rounded-lg bg-indigo-100 px-1 py-1 text-left text-sm font-small text-indigo-900 hover:bg-indigo-200 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
@@ -33,7 +37,7 @@ export const Ranking = () => {
           />
         </svg>
       </button>
-      <p className="ml-1 font-medium">#{123}</p>
+      <p className="ml-1 font-medium">#{ranking.ranking}</p>
     </nav>
   );
 };

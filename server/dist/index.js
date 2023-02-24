@@ -47,10 +47,19 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield conn.initialize().then(() => console.log("conn init"));
     yield conn.runMigrations();
     const app = (0, express_1.default)();
-    app.use((0, cors_1.default)({
-        origin: "https://studio.apollographql.com",
+    var whitelist = ["https://studio.apollographql.com", "http://localhost:3000"];
+    var corsOptions = {
+        origin: function (origin, callback) {
+            if (whitelist.indexOf(origin) !== -1) {
+                callback(null, true);
+            }
+            else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
         credentials: true,
-    }));
+    };
+    app.use((0, cors_1.default)(corsOptions));
     app.use((0, cookie_parser_1.default)());
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield (0, type_graphql_1.buildSchema)({
@@ -65,7 +74,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield apolloServer.start();
     apolloServer.applyMiddleware({
         app,
-        cors: { origin: "https://studio.apollographql.com", credentials: true },
+        cors: corsOptions,
     });
     app.listen(parseInt(port), () => {
         console.log("server started on localhost:4000");

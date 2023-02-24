@@ -43,14 +43,26 @@ const main = async () => {
   await conn.runMigrations();
 
   const app = express();
+  // app.options("*", cors());
+  // app.use(
+  //   cors({
+  //     credentials: true,
+  //   })
+  // );
 
-  app.use(
-    cors({
-      // origin: process.env.CORS_ORIGIN,
-      origin: "https://studio.apollographql.com",
-      credentials: true,
-    })
-  );
+  var whitelist = ["https://studio.apollographql.com", "http://localhost:3000"];
+  var corsOptions = {
+    origin: function (origin: any, callback: any) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  };
+
+  app.use(cors(corsOptions));
 
   app.use(cookieParser());
 
@@ -69,7 +81,7 @@ const main = async () => {
 
   apolloServer.applyMiddleware({
     app,
-    cors: { origin: "https://studio.apollographql.com", credentials: true },
+    cors: corsOptions,
   });
 
   app.listen(parseInt(port!), () => {
