@@ -30,14 +30,22 @@ export const PostCard: React.FC<PostCardProps> = (variables) => {
 
   const { loading, error, data } = useQuery(GET_POSTS, variables);
 
-  if (loading) return <p>Loading:..</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading)
+    return (
+      <div className="block max-w ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg shadow mt-2 mb-2 ">
+        <h2 className="text-xl font-bold font-lg">Loading...</h2>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="block max-w ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg shadow mt-2 mb-2 ">
+        <h2 className="text-xl font-bold font-lg">Error : {error.message}</h2>
+      </div>
+    );
 
   if (data.paginatedPosts.errors) {
+    // Work with errors here
     console.log("es", data.errors);
-  }
-  if (data) {
-    console.log("D", data);
   }
 
   return data.paginatedPosts.posts.map(

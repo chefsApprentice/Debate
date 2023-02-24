@@ -11,12 +11,16 @@ import {
 import {
   BrowserRouter,
   createBrowserRouter,
+  createRoutesFromElements,
+  Route,
   RouterProvider,
+  Routes,
 } from "react-router-dom";
-import App from "./App";
 import Home from "./routes/Home";
 import SignUp from "./routes/SignUp";
 import { Navbar } from "./components/Navbar";
+import NotFound from "./routes/NotFound";
+import SignIn from "./routes/SignIn";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -26,10 +30,20 @@ const client = new ApolloClient({
   uri: "http://localhost:4000/graphql",
   cache: new InMemoryCache(),
 });
-let router = createBrowserRouter([
-  { path: "/", element: <Home /> },
-  { path: "/Signup", element: <SignUp /> },
-]);
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    // <Route element={<AppLayout />}>
+    <>
+      <Route path="/" element={<Home />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="*" element={<NotFound />} />
+    </>
+
+    // </Route>
+  )
+);
 
 // root.render(
 //   <ApolloProvider client={client}>
@@ -41,7 +55,6 @@ let router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
-    <Navbar />
     <RouterProvider router={router} />
   </ApolloProvider>
 );

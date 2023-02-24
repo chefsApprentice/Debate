@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export type NavbarVariant = true | false;
 
@@ -58,18 +59,18 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
             </div>
           ) : (
             <div>
-              <a
-                href="#"
+              <Link
+                to={"/signin"}
                 className="text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
               >
                 Sign in
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to={"/signup"}
                 className="m-2 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
               >
                 Sign up
-              </a>
+              </Link>
             </div>
           )}
         </div>

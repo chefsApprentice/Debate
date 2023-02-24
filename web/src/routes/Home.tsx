@@ -7,10 +7,10 @@ import { SortBy } from "../components/Sortby";
 import { chooseQuery } from "../utils/chooseQuery";
 
 const Home = () => {
-  let signedIn = true;
+  let signedIn = false;
   const [selectedSort, setSelectedSort] = useState({
     id: 1,
-    name: "Lowest weighting",
+    name: "Newest",
   });
   const [topicsSelected, setSelectedTopics] = useState([]);
   const [scrolledDown, setScrolledDown] = useState(0);
@@ -19,7 +19,7 @@ const Home = () => {
   return (
     <div className="App">
       {/* This is the general navigation with home, search and profile */}
-
+      <Navbar />
       {/* These divs contain search option that affects query used */}
       <div>
         <nav className="flex items-center justify-between flex-wrap bg-white-500 m-6 ">
