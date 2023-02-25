@@ -21,6 +21,7 @@ import SignUp from "./routes/SignUp";
 import { Navbar } from "./components/Navbar";
 import NotFound from "./routes/NotFound";
 import SignIn from "./routes/SignIn";
+import { PostId } from "./routes/PostId";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<SignIn />} />
+      <Route path="/posts/:postId" element={<PostId />} />
       <Route path="*" element={<NotFound />} />
     </>
 

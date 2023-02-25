@@ -64,22 +64,23 @@ export const PostCard: React.FC<PostCardProps> = (variables) => {
       topic: string;
       user: any;
     }) => (
-      <div className="block max-w ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg shadow mt-2 mb-2 ">
-        <div className="rounded bg-white hover:bg-indigo-100 ">
+      <div
+        className="block max-w ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg mt-4 mb-4 "
+        key={id}
+      >
+        <div className="rounded bg-white hover:text-indigo-300 text-gray-900 ">
           <a href="#">
-            <h6 className="text-xl font-bold tracking-tight text-gray-900 ">
+            <h6 className="text-xl font-bold tracking-tight ">
               {user.username}
             </h6>
           </a>
         </div>
-        <div className="rounded bg-white hover:bg-indigo-100 ">
+        <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
           <a href="#">
-            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
+            <h5 className="mb-2 text-2xl font-bold tracking-tight  ">
               {topic} - {title}
             </h5>
-            <p className="font-normal text-gray-700 dark:text-gray-400">
-              {description}
-            </p>
+            <p className="font-normal ">{description}</p>
           </a>
         </div>
         <Ranking ranking={ranking} />
