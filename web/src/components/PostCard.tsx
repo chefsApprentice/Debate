@@ -1,33 +1,34 @@
 import { Ranking } from "./Ranking";
 import { useQuery, gql } from "@apollo/client";
 import { postsInput } from "../utils/chooseQuery";
+import { Link } from "react-router-dom";
 
-interface PostCardProps {
+export interface PostCardProps {
   variables: { inputs: postsInput };
 }
 
-export const PostCard: React.FC<PostCardProps> = (variables) => {
-  const GET_POSTS = gql`
-    query ($inputs: postsInput!) {
-      paginatedPosts(inputs: $inputs) {
-        errors {
-          error
-          field
-        }
-        posts {
-          id
-          description
-          title
-          ranking
-          topic
-          user {
-            username
-          }
+export const GET_POSTS = gql`
+  query ($inputs: postsInput!) {
+    paginatedPosts(inputs: $inputs) {
+      errors {
+        error
+        field
+      }
+      posts {
+        id
+        description
+        title
+        ranking
+        topic
+        user {
+          username
         }
       }
     }
-  `;
+  }
+`;
 
+export const PostCard: React.FC<PostCardProps> = (variables) => {
   const { loading, error, data } = useQuery(GET_POSTS, variables);
 
   if (loading)
@@ -65,7 +66,7 @@ export const PostCard: React.FC<PostCardProps> = (variables) => {
       user: any;
     }) => (
       <div
-        className="block max-w ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg mt-4 mb-4 "
+        className="max-w ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg mt-4 mb-4 "
         key={id}
       >
         <div className="rounded bg-white hover:text-indigo-300 text-gray-900 ">
@@ -76,12 +77,12 @@ export const PostCard: React.FC<PostCardProps> = (variables) => {
           </a>
         </div>
         <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
-          <a href="#">
+          <Link to={"/posts/" + id}>
             <h5 className="mb-2 text-2xl font-bold tracking-tight  ">
               {topic} - {title}
             </h5>
             <p className="font-normal ">{description}</p>
-          </a>
+          </Link>
         </div>
         <Ranking ranking={ranking} />
       </div>

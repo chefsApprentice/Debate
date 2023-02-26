@@ -40,6 +40,12 @@ export class registerInput {
   confirmPassword: string;
 }
 
+@InputType()
+class userIdClass {
+  @Field()
+  userId: number;
+}
+
 @ObjectType()
 export class userResponse {
   @Field(() => [FieldError], { nullable: true })
@@ -60,6 +66,24 @@ export class UserResolver {
   @Query(() => String)
   hello() {
     return "bye";
+  }
+
+  @Query(() => userResponse)
+  async fetchUser(@Arg("inputs") userId: userIdClass) {
+    const userRepo = conn.getRepository(User);
+    const user = await userRepo.findOne({
+      where: { id: userId.userId },
+      relations: {
+        posts: true,
+        arguments: true,
+      },
+    });
+    if (!user) {
+      return {
+        errors: [{ field: "userId", error: "That user doesn't exist" }],
+      };
+    }
+    return { user };
   }
 
   // only for development

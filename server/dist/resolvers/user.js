@@ -71,6 +71,15 @@ registerInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], registerInput);
 exports.registerInput = registerInput;
+let userIdClass = class userIdClass {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], userIdClass.prototype, "userId", void 0);
+userIdClass = __decorate([
+    (0, type_graphql_1.InputType)()
+], userIdClass);
 let userResponse = class userResponse {
 };
 __decorate([
@@ -101,6 +110,24 @@ logoutResponse = __decorate([
 class UserResolver {
     hello() {
         return "bye";
+    }
+    fetchUser(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userRepo = index_1.conn.getRepository(User_1.User);
+            const user = yield userRepo.findOne({
+                where: { id: userId.userId },
+                relations: {
+                    posts: true,
+                    arguments: true,
+                },
+            });
+            if (!user) {
+                return {
+                    errors: [{ field: "userId", error: "That user doesn't exist" }],
+                };
+            }
+            return { user };
+        });
     }
     getUsers() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -221,6 +248,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "hello", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => userResponse),
+    __param(0, (0, type_graphql_1.Arg)("inputs")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [userIdClass]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "fetchUser", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [User_1.User]),
     __metadata("design:type", Function),

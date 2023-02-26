@@ -28,3 +28,12 @@ npm run start
 npm run start
 
 ```
+
+## Things to do
+
+- [ ] Add cookies
+  - [ ] autologin
+  - [ ] Pass in user
+  - [ ] sign in sing up
+- [ ] Create posts modal and function
+- [ ] create arguments
