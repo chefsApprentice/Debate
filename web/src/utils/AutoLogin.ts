@@ -24,6 +24,7 @@ export const AutoLogin = async (
           dislikes
           argLikes
           argDislikes
+          topicsFollowed
         }
         # Id like to add a token field again
         # token
@@ -32,13 +33,13 @@ export const AutoLogin = async (
   `;
   const { loading, error, data } = await useQuery(AUTOLOGIN);
   console.log("token" + localStorage.getItem("token"));
-  if (localStorage.getItem("token") == "null") {
+  if (localStorage.getItem("token") === "null") {
     console.log("Ridden of");
     localStorage.removeItem("token");
     return;
   }
 
-  if (data.autoLogin && !loading && !userSet) {
+  if (data?.autoLogin && !loading && !userSet) {
     // console.log(data);
     console.log("ske");
     setUser(data.autoLogin.user);

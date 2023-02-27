@@ -19,7 +19,9 @@ export let chooseQuery = (
     if (topics.length) {
       variables.inputs.topics = topics;
     }
-  } catch {}
+  } catch {
+    console.log("topics:", topics);
+  }
 
   let sortBy = ["newest", "desc"];
   switch (selectedSort.name) {
@@ -35,5 +37,6 @@ export let chooseQuery = (
   }
   variables.inputs.sortBy = sortBy;
 
+  console.log("variables:", variables);
   return variables;
 };
