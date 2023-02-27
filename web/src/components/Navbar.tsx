@@ -14,6 +14,10 @@ interface NavbarProps {
   };
 }
 
+let signOut = () => {
+  localStorage.removeItem("token");
+};
+
 export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
   let signedIn = false;
   if (props.user) {
@@ -54,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
           ></input>
         </div>
         <div className="pl-4">
-          {signedIn === true ? (
+          {signedIn ? (
             <div>
               <a
                 href="#"
@@ -64,6 +68,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
               </a>
               <a
                 href="#"
+                onClick={signOut}
                 className="m-2 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
               >
                 Log out

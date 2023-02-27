@@ -15,10 +15,11 @@ export let chooseQuery = (
       sortBy: ["newest", "desc"],
     },
   };
-
-  if (topics.length >= 1) {
-    variables.inputs.topics = topics;
-  }
+  try {
+    if (topics.length) {
+      variables.inputs.topics = topics;
+    }
+  } catch {}
 
   let sortBy = ["newest", "desc"];
   switch (selectedSort.name) {

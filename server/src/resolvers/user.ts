@@ -228,6 +228,34 @@ export class UserResolver {
     return { user, token };
   }
 
+  @Mutation(() => userResponse)
+  async addTopic(
+    @Arg("topic") topic: string,
+    @Ctx() { req }: MyContext
+  ): Promise<userResponse> {
+    let userOrError = await verifyUser(req.headers["authorization"]!);
+    if (typeof userOrError.errors == undefined) {
+      return { errors: userOrError.errors };
+    }
+
+    let userId: JwtPayload = <JwtPayload>(
+      await jwt.verify(req.headers["authorization"]!, process.env.HASH_JWT!)
+    );
+    let userRepo = await conn.getRepository(User);
+    let user = await userRepo.findOne({
+      where: { id: <number>(<unknown>userId) },
+    });
+    try {
+      user!.topicsFollowed!.push(topic);
+    } catch {
+      user!.topicsFollowed! = [topic];
+    }
+
+    await userRepo.save(user!);
+
+    return { user: <User>user };
+  }
+
   @Query(() => userResponse)
   async autoLogin(@Ctx() { req }: MyContext): Promise<userResponse> {
     let token = req.headers["authorization"];

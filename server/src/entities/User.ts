@@ -27,7 +27,7 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email!: string;
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   @Column("text", { array: true, nullable: true })
   topicsFollowed?: string[];
 
