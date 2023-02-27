@@ -1,6 +1,73 @@
+import { gql, useMutation } from "@apollo/client";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+// import { Input } from "../components/Input";
 import { Navbar } from "../components/Navbar";
+import { AutoLogin } from "../utils/AutoLogin";
 
 export default function SignIn() {
+  const emailUsernameRef = React.useRef<HTMLInputElement>(null);
+  const passwordRef = React.useRef<HTMLInputElement>(null);
+
+  console.log(localStorage.getItem("token"));
+
+  const SIGNIN_USER = gql`
+    mutation ($inputs: loginInput!) {
+      login(inputs: $inputs) {
+        errors {
+          error
+          field
+        }
+        user {
+          email
+          id
+          username
+        }
+        token
+      }
+    }
+  `;
+
+  const [signInLazy, { loading, error, data }] = useMutation(SIGNIN_USER);
+
+  if (data) {
+    console.log("D", data);
+    localStorage.setItem("token", data.login.token);
+    console.log("token", data.login.token);
+  }
+
+  if (loading) {
+    return (
+      <div>
+        <Navbar />
+        <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg -mt-24 ">
+          <div className="m-auto">
+            <h1 className="text-4xl font-xl font-bold ">
+              Welcome, please sign in:
+            </h1>
+
+            <div className="mb-10 mt-10">
+              <label className="bg-emerald-300 text-white focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 mb-10 ">
+                Querying server
+              </label>
+            </div>
+
+            <br />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // AutoLogin();
+  const handleSubmit = () => {
+    const emailUsername = emailUsernameRef!.current!.value;
+    const password = passwordRef!.current!.value;
+
+    let variables = { inputs: { usernameOrEmail: emailUsername, password } };
+
+    signInLazy({ variables });
+  };
+
   return (
     <div>
       <Navbar />
@@ -16,6 +83,7 @@ export default function SignIn() {
                 type="string"
                 name="userOrEmailInput"
                 id="userOrEmailInput"
+                ref={emailUsernameRef!}
                 className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-indigo-400 peer"
                 placeholder=""
                 required
@@ -32,6 +100,7 @@ export default function SignIn() {
                 type="password"
                 name="passwordInput"
                 id="passwordInput"
+                ref={passwordRef!}
                 className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-indigo-400 peer"
                 placeholder=""
                 required
@@ -44,12 +113,14 @@ export default function SignIn() {
               </label>
             </div>
             <button
-              type="submit"
+              type="button"
               className="text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 "
+              onClick={handleSubmit}
             >
               Submit
             </button>
           </form>
+          {}
         </div>
       </div>
     </div>

@@ -55,6 +55,16 @@ export class userResponse {
 }
 
 @ObjectType()
+export class signInResponse {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+  @Field(() => User, { nullable: true })
+  user?: User;
+  @Field({ nullable: true })
+  token?: string;
+}
+
+@ObjectType()
 class logoutResponse {
   @Field(() => FieldError, { nullable: true })
   error?: FieldError;
@@ -166,11 +176,11 @@ export class UserResolver {
     return { user: newUser! };
   }
 
-  @Mutation(() => userResponse)
+  @Mutation(() => signInResponse)
   async login(
     @Arg("inputs") inputs: loginInput,
     @Ctx() { res, req }: MyContext
-  ): Promise<userResponse> {
+  ): Promise<signInResponse> {
     if (req.headers["authorization"]) {
       return {
         errors: [{ field: "token", error: "You are already logged in" }],
@@ -215,7 +225,7 @@ export class UserResolver {
         errors: [{ field: "password", error: "Passwords do not match" }],
       };
     }
-    return { user };
+    return { user, token };
   }
 
   @Query(() => userResponse)

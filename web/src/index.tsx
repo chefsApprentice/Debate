@@ -6,6 +6,7 @@ import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
+  createHttpLink,
   // gql,
 } from "@apollo/client";
 import {
@@ -25,13 +26,24 @@ import { PostId } from "./routes/PostId";
 import { Topic } from "./routes/Topic";
 import { UserId } from "./routes/UserId";
 import { AuthProvider } from "./utils/authUser";
+import { setContext } from "@apollo/client/link/context";
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+const httpLink = createHttpLink({ uri: "http://localhost:4000/graphql" });
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem("token");
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `${token}` : "",
+    },
+  };
+});
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
@@ -61,16 +73,11 @@ const router = createBrowserRouter(
 // );
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <AuthProvider>
-    <ApolloProvider client={client}>
-      <React.StrictMode>
-        <RouterProvider router={router} />
-      </React.StrictMode>
-    </ApolloProvider>
-  </AuthProvider>
+  // <AuthProvider>
+  <ApolloProvider client={client}>
+    <React.StrictMode>
+      <RouterProvider router={router} />
+    </React.StrictMode>
+  </ApolloProvider>
+  // </AuthProvider>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

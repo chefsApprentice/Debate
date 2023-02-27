@@ -4,11 +4,12 @@ import "../App.css";
 import { Navbar } from "../components/Navbar";
 import { PostCard } from "../components/PostCard";
 import { SortBy } from "../components/Sortby";
+import { AutoLogin } from "../utils/AutoLogin";
 import { chooseQuery } from "../utils/chooseQuery";
 // import { FollowBttn } from "../components/FollowBttn";
 
 const Home = () => {
-  let signedIn = false;
+  const [user, setUser] = useState();
   const [selectedSort, setSelectedSort] = useState({
     id: 1,
     name: "Newest",
@@ -17,6 +18,7 @@ const Home = () => {
   const [scrolledDown, setScrolledDown] = useState(0);
   const [errors, setErrors] = useState([]);
   let variables = chooseQuery(selectedSort, topicsSelected, scrolledDown);
+  AutoLogin(setUser);
 
   return (
     <div className="App">
@@ -36,7 +38,7 @@ const Home = () => {
             All
           </button>
           <button
-            disabled={!signedIn}
+            disabled={!user}
             // onClick={FollowBttn}
             className="ml-3 border border-indigo-300 w-full block flex-grow lg:flex lg:items-center lg:w-auto text-indigo-300 bg-white hover:text-white hover:bg-indigo-300 focus:ring-4 focus:outline-noen focus:ring-indigo-300 font-medium rounded-lg roudned-lg text-sm px-5 py-2.5 text-center mr-3 mdLmr-0"
           >

@@ -24,7 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserResolver = exports.userResponse = exports.registerInput = exports.loginInput = void 0;
+exports.UserResolver = exports.signInResponse = exports.userResponse = exports.registerInput = exports.loginInput = void 0;
 const User_1 = require("../entities/User");
 const types_1 = require("../types");
 const type_graphql_1 = require("type-graphql");
@@ -94,6 +94,24 @@ userResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], userResponse);
 exports.userResponse = userResponse;
+let signInResponse = class signInResponse {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => [types_1.FieldError], { nullable: true }),
+    __metadata("design:type", Array)
+], signInResponse.prototype, "errors", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => User_1.User, { nullable: true }),
+    __metadata("design:type", User_1.User)
+], signInResponse.prototype, "user", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], signInResponse.prototype, "token", void 0);
+signInResponse = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], signInResponse);
+exports.signInResponse = signInResponse;
 let logoutResponse = class logoutResponse {
 };
 __decorate([
@@ -226,7 +244,7 @@ class UserResolver {
                     errors: [{ field: "password", error: "Passwords do not match" }],
                 };
             }
-            return { user };
+            return { user, token };
         });
     }
     autoLogin({ req }) {
@@ -270,7 +288,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => userResponse),
+    (0, type_graphql_1.Mutation)(() => signInResponse),
     __param(0, (0, type_graphql_1.Arg)("inputs")),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
