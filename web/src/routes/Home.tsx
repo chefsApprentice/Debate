@@ -1,4 +1,4 @@
-import { Listbox } from "@headlessui/react";
+// import { Listbox } from "@headlessui/react";
 import { useCallback, useEffect, useState } from "react";
 import "../App.css";
 import { AllFollowed } from "../components/AllFollowed";
@@ -33,13 +33,12 @@ const Home = () => {
   console.log("user", user);
 
   useEffect(() => {
-    setFollowedSelected((prevSelected) => !prevSelected);
-  }, []);
+    setFollowedSelected((prevSelected) => ![]);
 
   return (
     <div className="App">
       {/* This is the general navigation with home, search and profile */}
-      <Navbar user={user} setUser={setUser} />
+      <Navbar user={user} />
       {/* These divs contain search option that affects query used */}
       <div>
         <nav className="flex items-center justify-between flex-wrap bg-white-500 m-6 ">

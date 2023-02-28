@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./authUser";
 
 export const AutoLogin = async (
@@ -37,16 +38,15 @@ export const AutoLogin = async (
   console.log("token" + token);
   if (token === "null") {
     console.log("Ridden of");
-    await localStorage.removeItem("token");
+    await localStorage.clear();
     setUserSet(false);
-    setUser(undefined);
-    return;
+    // setUser(undefined);
   } else if (token) {
     console.log("ls", token);
     if (data?.autoLogin?.user && !loading && !userSet) {
       // console.log(data);
       console.log("ske");
-      setUser(data.autoLogin.user);
+      setUser(data!.autoLogin!.user);
       setUserSet(true);
     }
   }

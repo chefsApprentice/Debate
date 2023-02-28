@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 // export type signedIn = true | false;
 
@@ -13,16 +13,17 @@ interface NavbarProps {
     argDislikes: number[];
   };
   setUser: any;
+  setFollowed?: any;
 }
 
-let signOut = async (setUser: any) => {
-  await setUser(null);
-
-  await localStorage.removeItem("token");
-  <Navigate to="/" />;
+let signOut = (setUser: any, navigate: any) => {
+  setUser(null);
+  localStorage.clear();
+  navigate(0);
 };
 
 export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
+  const navigate = useNavigate();
   return (
     <nav className="flex items-center justify-between flex-wrap bg-white-500 p-6 border-indigo-300 border-b">
       <div className="flex items-center flex-shrink-0 text-indigo-300 mr-6">
@@ -66,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
                 Profile:
               </Link>
               <button
-                onClick={() => signOut(props.setUser)}
+                onClick={() => signOut(props.setUser, navigate)}
                 className="m-2 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
               >
                 Log out

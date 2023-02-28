@@ -191,7 +191,7 @@ class UserResolver {
             newUser.likes = [];
             newUser.dislikes = [];
             yield index_1.conn.manager.save(newUser);
-            return { user: newUser, token };
+            return { user: newUser, token: token };
         });
     }
     login(inputs, { res, req }) {

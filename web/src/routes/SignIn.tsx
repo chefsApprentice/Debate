@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Navigate, redirect } from "react-router-dom";
+import { Navigate, redirect, useNavigate } from "react-router-dom";
 // import { Input } from "../components/Input";
 import { Navbar } from "../components/Navbar";
 import { AutoLogin } from "../utils/AutoLogin";
@@ -25,8 +25,6 @@ export default function SignIn() {
   const emailUsernameRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
-  AutoLogin(setUser, userSet, setUserSet);
-
   const SIGNIN_USER = gql`
     mutation ($inputs: loginInput!) {
       login(inputs: $inputs) {
@@ -48,10 +46,10 @@ export default function SignIn() {
 
   if (data) {
     console.log("D", data);
-    if (data.login.token) {
+    if (data.login?.token) {
       localStorage.setItem("token", data.login.token);
+      setUser(data.login.user);
       if (userSet === false) {
-        setUser(data.login.user);
         setUserSet(true);
       }
     }

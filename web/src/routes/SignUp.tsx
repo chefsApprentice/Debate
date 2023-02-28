@@ -54,10 +54,6 @@ export default function SignUp() {
     signUpLazy({ variables });
   };
 
-  if (user) {
-    return <Navigate to="/" />;
-  }
-
   if (data) {
     console.log("D", data);
     if (data.register.token) {
@@ -90,6 +86,10 @@ export default function SignUp() {
         </div>
       </div>
     );
+  }
+
+  if (user) {
+    return <Navigate to="/" />;
   }
 
   if (data?.register?.errors) {
