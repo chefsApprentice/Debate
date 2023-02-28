@@ -136,6 +136,7 @@ export const PostId = () => {
           ranking
           title
           user {
+            id
             username
           }
           arguments {
@@ -228,12 +229,12 @@ export const PostId = () => {
             {data.fetchPost.post.title}
           </h1>
           <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
-            <a href="#">
+            <Link to={"/users/" + data.fetchPost.post.user.id}>
               <h5 className="mb-2 text-lg font-bold tracking-tight  ">
                 <p className="font-normal">posted by:</p>{" "}
                 {data.fetchPost.post.user.username}
               </h5>
-            </a>
+            </Link>
           </div>
           <p className="font-normal font-lg">
             {data.fetchPost.post.description}

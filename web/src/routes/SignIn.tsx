@@ -5,7 +5,7 @@ import { Navigate, redirect } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { AutoLogin } from "../utils/AutoLogin";
 
-let Errors = (err: any) => {
+export const Errors = (err: any) => {
   if (typeof err != "undefined") {
     return err.errors.map((fieldError: any) => {
       return (
@@ -25,10 +25,7 @@ export default function SignIn() {
   const emailUsernameRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
-  console.log("L");
   AutoLogin(setUser, userSet, setUserSet);
-
-  console.log(localStorage.getItem("token"));
 
   const SIGNIN_USER = gql`
     mutation ($inputs: loginInput!) {
@@ -58,6 +55,10 @@ export default function SignIn() {
         setUserSet(true);
       }
     }
+  }
+
+  if (error) {
+    console.log("Big error", error);
   }
 
   if (loading) {
@@ -92,6 +93,7 @@ export default function SignIn() {
 
     signInLazy({ variables });
   };
+
   try {
     if (data.login.errors) {
       return (
@@ -157,7 +159,6 @@ export default function SignIn() {
   } catch {}
 
   if (user) {
-    console.log("hit");
     return <Navigate to="/" />;
   }
 

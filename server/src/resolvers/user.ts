@@ -52,14 +52,6 @@ export class userResponse {
   errors?: FieldError[];
   @Field(() => User, { nullable: true })
   user?: User;
-}
-
-@ObjectType()
-export class signInResponse {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[];
-  @Field(() => User, { nullable: true })
-  user?: User;
   @Field({ nullable: true })
   token?: string;
 }
@@ -173,14 +165,14 @@ export class UserResolver {
     newUser.dislikes = [];
 
     await conn.manager.save(newUser);
-    return { user: newUser! };
+    return { user: newUser!, token: token };
   }
 
-  @Mutation(() => signInResponse)
+  @Mutation(() => userResponse)
   async login(
     @Arg("inputs") inputs: loginInput,
     @Ctx() { res, req }: MyContext
-  ): Promise<signInResponse> {
+  ): Promise<userResponse> {
     if (req.headers["authorization"]) {
       return {
         errors: [{ field: "token", error: "You are already logged in" }],
