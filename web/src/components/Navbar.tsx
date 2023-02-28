@@ -13,22 +13,16 @@ interface NavbarProps {
     argDislikes: number[];
   };
   setUser: any;
-  setUserSet: any;
 }
 
-let signOut = async (setUser: any, setUserSet: any) => {
+let signOut = async (setUser: any) => {
   await setUser(null);
-  await setUserSet(false);
+
   await localStorage.removeItem("token");
   <Navigate to="/" />;
 };
 
 export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
-  let signedIn = false;
-  if (props.user) {
-    signedIn = true;
-  }
-
   return (
     <nav className="flex items-center justify-between flex-wrap bg-white-500 p-6 border-indigo-300 border-b">
       <div className="flex items-center flex-shrink-0 text-indigo-300 mr-6">
@@ -63,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
           ></input>
         </div>
         <div className="pl-4">
-          {signedIn ? (
+          {props.user ? (
             <div>
               <Link
                 to={"/users/" + props!.user!.id}
@@ -72,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
                 Profile:
               </Link>
               <button
-                onClick={() => signOut(props.setUser, props.setUserSet)}
+                onClick={() => signOut(props.setUser)}
                 className="m-2 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
               >
                 Log out
@@ -94,7 +88,6 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
               </Link>
             </div>
           )}
-          {JSON.stringify(props!.user)}
         </div>
       </div>
     </nav>

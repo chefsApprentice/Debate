@@ -31,21 +31,23 @@ export const AutoLogin = async (
       }
     }
   `;
+
   const { loading, error, data } = await useQuery(AUTOLOGIN);
   let token = await localStorage.getItem("token");
   console.log("token" + token);
   if (token === "null") {
     console.log("Ridden of");
     await localStorage.removeItem("token");
+    setUserSet(false);
+    setUser(undefined);
     return;
   } else if (token) {
     console.log("ls", token);
-  }
-
-  if (data?.autoLogin?.user && !loading && !userSet) {
-    // console.log(data);
-    console.log("ske");
-    setUser(data.autoLogin.user);
-    setUserSet(true);
+    if (data?.autoLogin?.user && !loading && !userSet) {
+      // console.log(data);
+      console.log("ske");
+      setUser(data.autoLogin.user);
+      setUserSet(true);
+    }
   }
 };

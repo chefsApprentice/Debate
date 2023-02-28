@@ -63,7 +63,7 @@ export default function SignIn() {
   if (loading) {
     return (
       <div>
-        <Navbar user={user} setUser={setUser} setUserSet={setUserSet} />
+        <Navbar user={user} setUser={setUser} />
         <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg -mt-24 ">
           <div className="m-auto">
             <h1 className="text-4xl font-xl font-bold ">
@@ -96,7 +96,7 @@ export default function SignIn() {
     if (data.login.errors) {
       return (
         <div>
-          <Navbar user={user} setUser={setUser} setUserSet={setUserSet} />
+          <Navbar user={user} setUser={setUser} />
           <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg -mt-24 ">
             <div className="m-auto">
               <h1 className="text-4xl font-xl font-bold ">
@@ -163,7 +163,7 @@ export default function SignIn() {
 
   return (
     <div>
-      <Navbar user={user} setUser={setUser} setUserSet={setUserSet} />
+      <Navbar user={user} setUser={setUser} />
       <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg -mt-24 ">
         <div className="m-auto">
           <h1 className="text-4xl font-xl font-bold ">
