@@ -36,6 +36,8 @@ export const AutoLogin = async (
     console.log("Ridden of");
     localStorage.removeItem("token");
     return;
+  } else if (localStorage.getItem("token")) {
+    return;
   }
 
   if (data.autoLogin && !loading && !userSet) {

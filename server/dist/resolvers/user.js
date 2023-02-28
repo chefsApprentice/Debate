@@ -247,6 +247,27 @@ class UserResolver {
             return { user, token };
         });
     }
+    addTopic(topic, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let userOrError = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
+            if (typeof userOrError.errors == undefined) {
+                return { errors: userOrError.errors };
+            }
+            let userId = (yield jsonwebtoken_1.default.verify(req.headers["authorization"], process.env.HASH_JWT));
+            let userRepo = yield index_1.conn.getRepository(User_1.User);
+            let user = yield userRepo.findOne({
+                where: { id: userId },
+            });
+            try {
+                user.topicsFollowed.push(topic);
+            }
+            catch (_a) {
+                user.topicsFollowed = [topic];
+            }
+            yield userRepo.save(user);
+            return { user: user };
+        });
+    }
     autoLogin({ req }) {
         return __awaiter(this, void 0, void 0, function* () {
             let token = req.headers["authorization"];
@@ -295,6 +316,14 @@ __decorate([
     __metadata("design:paramtypes", [loginInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => userResponse),
+    __param(0, (0, type_graphql_1.Arg)("topic")),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "addTopic", null);
 __decorate([
     (0, type_graphql_1.Query)(() => userResponse),
     __param(0, (0, type_graphql_1.Ctx)()),
