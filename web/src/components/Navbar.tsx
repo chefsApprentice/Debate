@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, Navigate } from "react-router-dom";
 
 // export type signedIn = true | false;
 
@@ -12,10 +12,15 @@ interface NavbarProps {
     argLikes: number[];
     argDislikes: number[];
   };
+  setUser: any;
+  setUserSet: any;
 }
 
-let signOut = () => {
-  localStorage.removeItem("token");
+let signOut = async (setUser: any, setUserSet: any) => {
+  await setUser(null);
+  await setUserSet(false);
+  await localStorage.removeItem("token");
+  <Navigate to="/" />;
 };
 
 export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
@@ -60,19 +65,18 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
         <div className="pl-4">
           {signedIn ? (
             <div>
-              <a
-                href="#"
+              <Link
+                to={"/users/" + props!.user!.id}
                 className="text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
               >
                 Profile:
-              </a>
-              <a
-                href="#"
-                onClick={signOut}
+              </Link>
+              <button
+                onClick={() => signOut(props.setUser, props.setUserSet)}
                 className="m-2 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
               >
                 Log out
-              </a>
+              </button>
             </div>
           ) : (
             <div>
@@ -90,6 +94,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
               </Link>
             </div>
           )}
+          {JSON.stringify(props!.user)}
         </div>
       </div>
     </nav>

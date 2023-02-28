@@ -1,4 +1,4 @@
-// import { Listbox } from "@headlessui/react";
+import { Listbox } from "@headlessui/react";
 import { useCallback, useEffect, useState } from "react";
 import "../App.css";
 import { AllFollowed } from "../components/AllFollowed";
@@ -22,13 +22,15 @@ const Home = () => {
   const [errors, setErrors] = useState([]);
 
   if (followedSelected === true) {
-    if (typeof user.topicsSelected != "undefined") {
-      setSelectedTopics(user!.topicsSelected);
+    if (user.topicsSelected) {
+      setSelectedTopics(user!.topicsFollowed);
     }
   }
 
   let variables = chooseQuery(selectedSort, topicsSelected, scrolledDown);
+
   AutoLogin(setUser, userSet, setUserSet);
+  console.log("user", user);
 
   useEffect(() => {
     setFollowedSelected((prevSelected) => !prevSelected);
@@ -37,7 +39,7 @@ const Home = () => {
   return (
     <div className="App">
       {/* This is the general navigation with home, search and profile */}
-      <Navbar user={user} />
+      <Navbar user={user} setUser={setUser} setUserSet={setUserSet} />
       {/* These divs contain search option that affects query used */}
       <div>
         <nav className="flex items-center justify-between flex-wrap bg-white-500 m-6 ">
@@ -48,33 +50,15 @@ const Home = () => {
               setSelectedSort={setSelectedSort}
             />
           </div>
-          {/* <AllFollowed
-            followedSelected={followedSelected}
-            setFollowedSelected={setFollowedSelected}
-            signedIn={user ? true : false}
-          /> */}
-          <button
-            className={
-              !followedSelected
-                ? "w-full block flex-grow lg:flex lg:items-center lg:w-auto text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-2 "
-                : "border border-indigo-300 w-full block flex-grow lg:flex lg:items-center lg:w-auto text-indigo-300 bg-white hover:text-white hover:bg-indigo-300 focus:ring-4 focus:outline-noen focus:ring-indigo-300 font-medium rounded-lg roudned-lg text-sm px-5 py-2.5 text-center ml-2"
-            }
-            onClick={() => setFollowedSelected(false)}
-          >
-            All
-          </button>
-          <button
-            disabled={!user}
-            // onClick={FollowBttn}
-            className={
-              followedSelected
-                ? "w-full block flex-grow lg:flex lg:items-center lg:w-auto text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-2"
-                : " border border-indigo-300 w-full block flex-grow lg:flex lg:items-center lg:w-auto text-indigo-300 bg-white hover:text-white hover:bg-indigo-300 focus:ring-4 focus:outline-noen focus:ring-indigo-300 font-medium rounded-lg roudned-lg text-sm px-5 py-2.5 text-center  ml-2"
-            }
-            onClick={() => setFollowedSelected(true)}
-          >
-            Followed
-          </button>
+          <div className="w-max flex-grow">
+            <AllFollowed
+              followedSelected={followedSelected}
+              setFollowedSelected={setFollowedSelected}
+              user={user}
+              // topicsSelected={topicsSelected}
+              setSelectedTopics={setSelectedTopics}
+            />
+          </div>
         </nav>
       </div>
       <div className="mt-2">

@@ -31,9 +31,14 @@ npm run start
 
 ## Things to do
 
-- [ ] Add cookies
-  - [ ] autologin
-  - [ ] Pass in user
-  - [ ] sign in sing up
-- [ ] Create posts modal and function
+- [ ] create posts
 - [ ] create arguments
+- [x] user page
+- [ ] ranking
+- [ ] create user
+- [x] update navbar everyhwere / add autologin everywhere
+- [ ] Search bar
+- [ ] Add paginated posts using button and state
+- [ ] Minor fixes
+  - [ ] Set all / followed disabled if selected
+  - [ ] topics followed, show topics followed button

@@ -248,6 +248,7 @@ class UserResolver {
         });
     }
     addTopic(topic, { req }) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let userOrError = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
             if (typeof userOrError.errors == undefined) {
@@ -256,12 +257,18 @@ class UserResolver {
             let userId = (yield jsonwebtoken_1.default.verify(req.headers["authorization"], process.env.HASH_JWT));
             let userRepo = yield index_1.conn.getRepository(User_1.User);
             let user = yield userRepo.findOne({
-                where: { id: userId },
+                where: { id: userId.userId },
             });
             try {
+                let x = (_a = user.topicsFollowed) === null || _a === void 0 ? void 0 : _a.indexOf(topic);
+                if (x >= 0) {
+                    return {
+                        errors: [{ error: "Topic already followed", field: "topic" }],
+                    };
+                }
                 user.topicsFollowed.push(topic);
             }
-            catch (_a) {
+            catch (_b) {
                 user.topicsFollowed = [topic];
             }
             yield userRepo.save(user);

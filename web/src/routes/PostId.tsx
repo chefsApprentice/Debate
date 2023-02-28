@@ -1,9 +1,14 @@
 import { gql, useQuery } from "@apollo/client";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { Ranking } from "../components/Ranking";
+import { AutoLogin } from "../utils/AutoLogin";
 
-export let argumentsCard = (argumentsArr: any) => {
+export let argumentsCard = (
+  argumentsArr: any,
+  extraUserIdArr?: [string, number]
+) => {
   return argumentsArr.map(
     ({
       id,
@@ -29,11 +34,17 @@ export let argumentsCard = (argumentsArr: any) => {
         key={id}
       >
         <div className="rounded bg-white hover:text-indigo-300 text-gray-900 ">
-          <a href="#">
+          <Link
+            to={
+              extraUserIdArr
+                ? "/users/" + extraUserIdArr![1]
+                : "/users/" + user.id
+            }
+          >
             <h6 className="text-xl font-bold tracking-tight ">
-              {user.username}
+              {extraUserIdArr ? extraUserIdArr![0] : user.username}
             </h6>
-          </a>
+          </Link>
         </div>
         <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
           <a href="#">
@@ -54,7 +65,7 @@ export let argumentsCard = (argumentsArr: any) => {
           <p className="font-bold">References :</p>
           {references.map((ref) => (
             <div>
-              <a href="#" className="mr-1">
+              <a href="#" className="mr-1 text-indigo-400 font-bold">
                 {ref} ,
               </a>
             </div>
@@ -64,7 +75,7 @@ export let argumentsCard = (argumentsArr: any) => {
           <p className="font-bold">{"Referenced By : "} </p>
           {referencedBy.map((ref) => (
             <div>
-              <a href="#" className="mr-1">
+              <a href="#" className="mr-1 text-indigo-400 font-bold">
                 {" "}
                 {ref} ,
               </a>
@@ -77,12 +88,16 @@ export let argumentsCard = (argumentsArr: any) => {
 };
 
 export const PostId = () => {
+  const [user, setUser]: any = useState();
+  const [userSet, setUserSet] = useState(false);
+  AutoLogin(setUser, userSet, setUserSet);
   let { postId } = useParams();
   let postIdTyped: number = +postId!;
   if (isNaN(postIdTyped))
     return (
       <div>
-        <Navbar />
+        <Navbar user={user} setUser={setUser} />
+
         <div className="flex h-screen -mt-24">
           <div className="m-auto text-center">
             <h1 className="text-7xl font-xl font-bold text-indigo-300 ">
@@ -132,6 +147,7 @@ export const PostId = () => {
             references
             referencedBy
             user {
+              id
               username
             }
           }
@@ -146,7 +162,7 @@ export const PostId = () => {
   if (loading)
     return (
       <div>
-        <Navbar />
+        <Navbar user={user} setUser={setUser} />
         <div className="block max-w ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg shadow mt-2 mb-2 ">
           <h2 className="text-xl font-bold font-lg text-indigo-300">
             Loading...
@@ -158,7 +174,7 @@ export const PostId = () => {
   if (error)
     return (
       <div>
-        <Navbar />
+        <Navbar user={user} setUser={setUser} />
         <div className="block max-w ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg shadow mt-2 mb-2 ">
           <h2 className="text-xl font-bold font-lg text-indigo-300">
             Error : {error.message}
@@ -173,7 +189,7 @@ export const PostId = () => {
     if (data.fetchPost.errors[0].error === "That post doesn't exist")
       return (
         <div>
-          <Navbar />
+          <Navbar user={user} setUser={setUser} />
           <div className="flex h-screen -mt-24">
             <div className="m-auto text-center">
               <h1 className="text-7xl font-xl font-bold text-indigo-300 ">
@@ -197,7 +213,8 @@ export const PostId = () => {
 
   return (
     <div className="App">
-      <Navbar />
+      <Navbar user={user} setUser={setUser} />
+
       <div className="flex items-center justify-between flex-wrap p-10 ">
         <div className="rounded bg-white text-gray-900 m-auto text-center ">
           <div className="rounded bg-white hover:text-indigo-300 text-gray-900">

@@ -1,24 +1,66 @@
-import { useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { PostCard } from "../components/PostCard";
 import { SortBy } from "../components/Sortby";
+import { AutoLogin } from "../utils/AutoLogin";
 import { chooseQuery } from "../utils/chooseQuery";
 
 export const Topic = () => {
+  const [user, setUser]: any = useState();
+  const [userSet, setUserSet] = useState(false);
+  const [followed, setFollowed]: [boolean, any] = useState(false);
   const [selectedSort, setSelectedSort] = useState({
     id: 1,
     name: "Newest",
   });
   const [topicsSelected, setSelectedTopics]: [string[], any] = useState([]);
   const [scrolledDown, setScrolledDown] = useState(0);
+  AutoLogin(setUser, userSet, setUserSet);
   let variables = chooseQuery(selectedSort, topicsSelected, scrolledDown);
 
+  const FOLLOW_TOPIC = gql`
+    mutation ($topic: String!) {
+      addTopic(topic: $topic) {
+        errors {
+          error
+          field
+        }
+        user {
+          username
+          topicsFollowed
+        }
+      }
+    }
+  `;
+
+  const [
+    lazyFollow,
+    { loading: followedLoading, error: followedError, data: followedData },
+  ] = useMutation(FOLLOW_TOPIC);
+
+  useEffect(() => {
+    setFollowed((prevFollowed: any) => !prevFollowed);
+  }, []);
+
   const { topic } = useParams();
+  let followVariables = { topic: topic };
+
+  // if (followedData) {
+  //   console.log("follwoed Data 1", followedData);
+  //   try {
+  //     if (followedData.addTopic.errors[0].error === "Topic already followed") {
+  //       setFollowed(true);
+  //     }
+  //   } catch {}
+  // }
+
   if (!topic) {
     return (
       <div>
-        <Navbar />
+        <Navbar user={user} setUser={setUser} />
+
         <div className="flex h-screen -mt-24">
           <div className="m-auto text-center">
             <h1 className="text-7xl font-xl font-bold text-indigo-300 ">
@@ -39,12 +81,35 @@ export const Topic = () => {
     return (
       <div className="App">
         {/* This is the general navigation with home, search and profile */}
-        <Navbar />
+
+        <Navbar user={user} setUser={setUser} />
+
         {/* These divs contain search option that affects query used */}
-        <div className="flex mt-10">
+        <div className="flex flex-col justify-center mt-10">
           <h2 className="text-7xl font-xl font-bold text-black m-auto">
             {topic}
           </h2>
+          <button
+            // This requires quite a bit of logic
+
+            onClick={
+              !followed
+                ? () => {
+                    lazyFollow({ variables: followVariables });
+                    console.log("followed data", followedData);
+                    setFollowed(true);
+                  }
+                : () => {
+                    console.log("UnFollow");
+                  }
+            }
+            className={
+              "text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center p-5 w-40 m-auto mt-5"
+            }
+            disabled={followed}
+          >
+            {!followed ? "Follow topic" : "Topic followed"}
+          </button>
         </div>
 
         <div>

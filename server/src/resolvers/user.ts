@@ -243,9 +243,15 @@ export class UserResolver {
     );
     let userRepo = await conn.getRepository(User);
     let user = await userRepo.findOne({
-      where: { id: <number>(<unknown>userId) },
+      where: { id: <number>(<unknown>userId.userId) },
     });
     try {
+      let x = user!.topicsFollowed?.indexOf(topic);
+      if (x! >= 0) {
+        return {
+          errors: [{ error: "Topic already followed", field: "topic" }],
+        };
+      }
       user!.topicsFollowed!.push(topic);
     } catch {
       user!.topicsFollowed! = [topic];

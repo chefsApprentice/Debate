@@ -1,9 +1,15 @@
+import { useState } from "react";
 import { Navbar } from "../components/Navbar";
+import { AutoLogin } from "../utils/AutoLogin";
 
 export default function SignUp() {
+  const [user, setUser]: any = useState();
+  const [userSet, setUserSet] = useState(false);
+  AutoLogin(setUser, userSet, setUserSet);
   return (
     <div>
-      <Navbar />
+      <Navbar user={user} setUser={setUser} />
+
       <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg -mt-24 ">
         <div className="m-auto">
           <h1 className="text-4xl font-xl font-bold ">
