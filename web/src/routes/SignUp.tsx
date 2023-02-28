@@ -1,7 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import React from "react";
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { AutoLogin } from "../utils/AutoLogin";
 import { Errors } from "./SignIn";
@@ -89,7 +88,19 @@ export default function SignUp() {
   }
 
   if (user) {
-    return <Navigate to="/" />;
+    return (
+      <div>
+        <Navbar user={user} setUser={setUser} />
+        <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg -mt-24 ">
+          <div className="m-auto">
+            <h1 className="text-4xl font-xl font-bold ">
+              Thank you for signing up.
+            </h1>
+            <br />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (data?.register?.errors) {

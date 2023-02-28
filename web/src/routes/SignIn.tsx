@@ -42,14 +42,19 @@ export default function SignIn() {
     }
   `;
 
+  // useEffect(() => {
+  AutoLogin(setUser, userSet, setUserSet);
+  // }, [userSet]);
+
   const [signInLazy, { loading, error, data }] = useMutation(SIGNIN_USER);
 
   if (data) {
     console.log("D", data);
     if (data.login?.token) {
       localStorage.setItem("token", data.login.token);
-      setUser(data.login.user);
       if (userSet === false) {
+        let userNew = { ...data!.login!.user };
+        setUser(userNew);
         setUserSet(true);
       }
     }
@@ -157,7 +162,19 @@ export default function SignIn() {
   } catch {}
 
   if (user) {
-    return <Navigate to="/" />;
+    return (
+      <div>
+        <Navbar user={user} setUser={setUser} />
+        <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg -mt-24 ">
+          <div className="m-auto">
+            <h1 className="text-4xl font-xl font-bold ">
+              Thank you for signing in.
+            </h1>
+            <br />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

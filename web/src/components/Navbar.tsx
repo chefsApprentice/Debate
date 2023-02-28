@@ -57,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
             placeholder="Enter a topic or post here!"
           ></input>
         </div>
-        <div className="pl-4">
+        <div key={props.user?.username!} className="pl-4">
           {props.user ? (
             <div>
               <Link

@@ -41,13 +41,23 @@ export const AutoLogin = async (
     await localStorage.clear();
     setUserSet(false);
     // setUser(undefined);
+  } else if (userSet) {
   } else if (token) {
     console.log("ls", token);
-    if (data?.autoLogin?.user && !loading && !userSet) {
+    if (data?.autoLogin?.user && !loading) {
       // console.log(data);
       console.log("ske");
-      setUser(data!.autoLogin!.user);
+      let userNew = { ...data!.autoLogin!.user };
+      setUser(userNew);
       setUserSet(true);
     }
+  } else {
+    console.log("OOH sppooy");
+    // if (data?.autoLogin?.user && !loading) {
+    //   // console.log(data);
+    //   console.log("ske");
+    //   setUser(data!.autoLogin!.user);
+    //   setUserSet(true);
+    // }
   }
 };

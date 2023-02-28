@@ -29,16 +29,29 @@ const Home = () => {
 
   let variables = chooseQuery(selectedSort, topicsSelected, scrolledDown);
 
+  // useEffect(() => {
+  // if (!user) {
   AutoLogin(setUser, userSet, setUserSet);
-  console.log("user", user);
+  // } else {
+  // console.log("user", user);
+  console.log("welp");
+
+  // }, []);
+
+  // useEffect(() => {
+  // AutoLogin(setUser, userSet, setUserSet);
+  // }, [userSet]);
 
   useEffect(() => {
-    setFollowedSelected((prevSelected) => ![]);
+    setFollowedSelected((prevSelected) => !prevSelected);
+  }, [followedSelected]);
 
   return (
     <div className="App">
       {/* This is the general navigation with home, search and profile */}
-      <Navbar user={user} />
+      <div>
+        <Navbar user={user} setUser={setUser} />
+      </div>
       {/* These divs contain search option that affects query used */}
       <div>
         <nav className="flex items-center justify-between flex-wrap bg-white-500 m-6 ">
