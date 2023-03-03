@@ -79,7 +79,6 @@ export const postsJsx = (posts: any, extraUserIdArr?: [string, number]) => {
 };
 
 export const PostCard: React.FC<PostCardProps> = (variables) => {
-  const [posts, setPosts]: any = useState([]);
   const { loading, error, data } = useQuery(GET_POSTS, variables);
 
   if (loading)
@@ -100,34 +99,6 @@ export const PostCard: React.FC<PostCardProps> = (variables) => {
     console.log("es", data.errors);
   }
 
-  if (data?.paginatedPosts?.posts) {
-    console.log("think");
-    try {
-      console.log("lengths", data.paginatedPosts.posts.length);
-      let lastId = 3 * variables.variables.inputs.scrolledDown + 3;
-      if (
-        data?.paginatedPosts?.posts[3].id !== posts[lastId].id &&
-        data?.paginatedPosts?.posts?.length !== 0 &&
-        posts.length !== 0
-      ) {
-        let newPosts = posts;
-        newPosts.concat([...data.paginatedPosts.posts]);
-        console.log("F", newPosts);
-        setPosts(newPosts);
-      } else if (posts.length === 0) {
-        setPosts([...data!.paginatedPosts!.posts!]);
-        console.log("bu");
-      }
-    } catch (e) {
-      if (data.paginatedPosts.posts.length === 0) {
-      } else if (posts.length === 0) {
-        setPosts([...data.paginatedPosts.posts]);
-        console.log("pppppp", posts, data.paginatedPosts.posts);
-      }
-      console.log("e:", e);
-    }
-  }
-
   // if (data.paginatedPosts?.posts?.length === 0) {
   //   return (
   //     <>
@@ -139,7 +110,7 @@ export const PostCard: React.FC<PostCardProps> = (variables) => {
 
   return (
     <>
-      {postsJsx(posts)}{" "}
+      {postsJsx(data.paginatedPosts.posts)}
       {data.paginatedPosts?.post?.lenth === 0 ? <p>No more debates</p> : <></>}
     </>
   );

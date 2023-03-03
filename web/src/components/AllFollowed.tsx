@@ -24,7 +24,7 @@ export const AllFollowed: React.FC<AllFollowedProps> = (
         }
         onClick={() => {
           props.setFollowedSelected(false);
-          props.setSelectedTopics([]);
+          // props.setSelectedTopics([]);
         }}
       >
         All
@@ -39,7 +39,7 @@ export const AllFollowed: React.FC<AllFollowedProps> = (
         }
         onClick={() => {
           props.setFollowedSelected(true);
-          props.setSelectedTopics(props.user.topicsFollowed);
+          // props.setSelectedTopics(props.user.topicsFollowed);
         }}
       >
         Followed
