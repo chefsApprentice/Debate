@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { PostCard } from "../components/PostCard";
 import { SortBy } from "../components/Sortby";
@@ -89,27 +89,37 @@ export const Topic = () => {
           <h2 className="text-7xl font-xl font-bold text-black m-auto">
             {topic}
           </h2>
-          <button
-            // This requires quite a bit of logic
+          <nav className="flex flex-auto">
+            <button
+              // This requires quite a bit of logic
 
-            onClick={
-              !followed
-                ? () => {
-                    lazyFollow({ variables: followVariables });
-                    console.log("followed data", followedData);
-                    setFollowed(true);
-                  }
-                : () => {
-                    console.log("UnFollow");
-                  }
-            }
-            className={
-              "text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center p-5 w-40 m-auto mt-5"
-            }
-            disabled={followed}
-          >
-            {!followed ? "Follow topic" : "Topic followed"}
-          </button>
+              onClick={
+                !followed
+                  ? () => {
+                      lazyFollow({ variables: followVariables });
+                      console.log("followed data", followedData);
+                      setFollowed(true);
+                    }
+                  : () => {
+                      console.log("UnFollow");
+                    }
+              }
+              className={
+                "text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center p-5 w-40 m-auto mt-5"
+              }
+              disabled={followed}
+            >
+              {!followed ? "Follow topic" : "Topic followed"}
+            </button>
+            <Link
+              to={"/createPost/" + topic}
+              className={
+                "ml-2 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center p-5 w-40 m-auto mt-5"
+              }
+            >
+              Create post
+            </Link>
+          </nav>
         </div>
 
         <div>

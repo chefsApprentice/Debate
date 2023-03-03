@@ -27,8 +27,8 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Post.prototype, "user", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(() => [Argument_1.Argument]),
-    (0, typeorm_1.OneToMany)(() => Argument_1.Argument, (argument) => argument.post),
+    (0, type_graphql_1.Field)(() => [Argument_1.Argument], { nullable: true }),
+    (0, typeorm_1.OneToMany)(() => Argument_1.Argument, (argument) => argument.post, { nullable: true }),
     __metadata("design:type", Array)
 ], Post.prototype, "arguments", void 0);
 __decorate([

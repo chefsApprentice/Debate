@@ -27,6 +27,7 @@ import { Topic } from "./routes/Topic";
 import { UserId } from "./routes/UserId";
 import { AuthProvider } from "./utils/authUser";
 import { setContext } from "@apollo/client/link/context";
+import { CreatePost } from "./routes/CreatePost";
 
 const httpLink = createHttpLink({ uri: "http://localhost:4000/graphql" });
 
@@ -56,6 +57,7 @@ const router = createBrowserRouter(
       <Route path="/signin" element={<SignIn />} />
       <Route path="/posts/:postId" element={<PostId />} />
       <Route path="/topics/:topic" element={<Topic />} />
+      <Route path="/createPost/:topic" element={<CreatePost />} />
       <Route path="/users/:userId" element={<UserId />} />
       <Route path="*" element={<NotFound />} />
     </>
