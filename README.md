@@ -31,14 +31,15 @@ npm run start
 
 ## Things to do
 
-- [ ] create posts
+- [x] create posts
 - [ ] create arguments
+  - [ ] Add referencing
 - [x] user page
 - [ ] ranking
 - [x] create user
 - [x] update navbar everyhwere / add autologin everywhere
-- [ ] Search bar
 - [ ] Add paginated posts using button and state
 - [ ] Minor fixes
   - [ ] Set all / followed disabled if selected
   - [ ] topics followed, show topics followed button
+  - [ ] Search bar

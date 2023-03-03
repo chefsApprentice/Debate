@@ -242,14 +242,12 @@ export const PostId = () => {
           <div className="flex items-center justify-between text-center mt-2">
             <Ranking ranking={data.fetchPost.post.ranking} />
             <div id="modal">
-              <button
-                type="button"
-                data-modal-target="authentication-modal"
-                data-modal-toggle="authentication-modal"
+              <Link
+                to={"/createArgument/" + postIdTyped}
                 className=" ml-5 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 "
               >
                 Create Argument
-              </button>
+              </Link>
             </div>
           </div>
         </div>

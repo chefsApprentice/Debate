@@ -10,7 +10,7 @@ export const CreatePost = () => {
   const [user, setUser]: any = useState();
   const [userSet, setUserSet] = useState(false);
   const titleRef = React.useRef<HTMLInputElement>(null);
-  const descriptionRef = React.useRef<HTMLInputElement>(null);
+  const descriptionRef = React.useRef<HTMLTextAreaElement>(null);
   AutoLogin(setUser, userSet, setUserSet);
   let { topic } = useParams();
   console.log("topciname", topic);
@@ -149,8 +149,7 @@ export const CreatePost = () => {
                 </label>
               </div>
               <div className="relative z-0 w-full mb-6 group">
-                <input
-                  type="text"
+                <textarea
                   name="descriptionInput"
                   id="descriptionInput"
                   ref={descriptionRef!}
@@ -183,11 +182,11 @@ export const CreatePost = () => {
   return (
     <div>
       <Navbar user={user} setUser={setUser} />
-      <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg -mt-24 ">
-        <div className="m-auto">
+      <div className="flex flex-grow h-screen justify-center ml-15 mr-15 p-6 rounded-lg -mt-24 ">
+        <div className="m-auto min-w-full">
           <h1 className="text-4xl font-xl font-bold ">Create a debate:</h1>{" "}
           <br />
-          <form className="mt-5">
+          <form className="mt-5 min-w-max">
             <div className="relative z-0 w-full mb-6 group">
               <input
                 type="text"
@@ -206,8 +205,7 @@ export const CreatePost = () => {
               </label>
             </div>
             <div className="relative z-0 w-full mb-6 group">
-              <input
-                type="text"
+              <textarea
                 name="descriptionInput"
                 id="descriptionInput"
                 ref={descriptionRef!}

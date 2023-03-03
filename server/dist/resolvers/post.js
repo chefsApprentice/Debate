@@ -119,7 +119,7 @@ class PostResolver {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let order = (0, paginated_Utils_1.orderSwitch)(inputs.sortBy[0], inputs.sortBy[1]);
-            const selectionAmount = 25;
+            const selectionAmount = 4;
             let skip = inputs.scrolledDown * selectionAmount;
             const postRepo = index_1.conn.getRepository(Post_1.Post);
             let repoVar = {
