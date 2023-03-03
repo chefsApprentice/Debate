@@ -32,14 +32,16 @@ npm run start
 ## Things to do
 
 - [x] create posts
-- [ ] create arguments
+- [x] create arguments
   - [ ] Add referencing
 - [x] user page
 - [ ] ranking
 - [x] create user
 - [x] update navbar everyhwere / add autologin everywhere
-- [ ] Add paginated posts using button and state
+- [x] Add paginated posts using button and state
+  - [x] Add it whever paginated posts are used
 - [ ] Minor fixes
   - [ ] Set all / followed disabled if selected
   - [ ] topics followed, show topics followed button
   - [ ] Search bar
+  - [ ] Add the ability to unfollow topics
