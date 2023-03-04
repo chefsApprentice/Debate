@@ -40,8 +40,10 @@ npm run start
 - [x] update navbar everyhwere / add autologin everywhere
 - [x] Add paginated posts using button and state
   - [x] Add it whever paginated posts are used
+- [x] Delete posts
+  - [ ] Delete Arguments
 - [ ] Minor fixes
   - [ ] Set all / followed disabled if selected
   - [ ] topics followed, show topics followed button
-  - [ ] Search bar
+  <!-- - [ ] Search bar -->
   - [ ] Add the ability to unfollow topics

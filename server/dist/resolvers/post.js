@@ -90,6 +90,19 @@ __decorate([
 postsResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], postsResponse);
+let boolError = class boolError {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => [types_1.FieldError], { nullable: true }),
+    __metadata("design:type", Array)
+], boolError.prototype, "errors", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Boolean, { nullable: true }),
+    __metadata("design:type", Boolean)
+], boolError.prototype, "success", void 0);
+boolError = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], boolError);
 let aPostResponse = class aPostResponse {
 };
 __decorate([
@@ -259,6 +272,36 @@ class PostResolver {
             }
         });
     }
+    deletePost(postId, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let userOrError = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
+            if (userOrError.errors) {
+                return { errors: userOrError.errors };
+            }
+            else if (!userOrError.user) {
+                return { errors: [{ field: "user", error: "No user!" }] };
+            }
+            let user = userOrError.user;
+            console.log("user", user);
+            let postRepo = yield index_1.conn.getRepository(Post_1.Post);
+            try {
+                let success = yield postRepo.delete({
+                    id: postId.postId,
+                    user: { id: user.id },
+                });
+                if (success.affected == 1) {
+                    return { success: true };
+                }
+                else if (success.affected == 0) {
+                    return { success: false };
+                }
+            }
+            catch (e) {
+                return { errors: [{ error: e, field: "Proabably_user" }] };
+            }
+            return { success: false };
+        });
+    }
 }
 __decorate([
     (0, type_graphql_1.Query)(() => [Post_1.Post]),
@@ -296,5 +339,13 @@ __decorate([
     __metadata("design:paramtypes", [types_1.rateInput, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "ratePost", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => boolError),
+    __param(0, (0, type_graphql_1.Arg)("inputs")),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [postIdClass, Object]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "deletePost", null);
 exports.PostResolver = PostResolver;
 //# sourceMappingURL=post.js.map

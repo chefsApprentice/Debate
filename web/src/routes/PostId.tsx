@@ -87,6 +87,10 @@ export let argumentsCard = (
   );
 };
 
+export type postIdClass = {
+  postId: number;
+};
+
 export const PostId = () => {
   const [user, setUser]: any = useState();
   const [userSet, setUserSet] = useState(false);
@@ -113,10 +117,6 @@ export const PostId = () => {
         </div>
       </div>
     );
-
-  type postIdClass = {
-    postId: number;
-  };
 
   let variables: { inputs: postIdClass } = {
     inputs: { postId: postIdTyped! },
@@ -249,6 +249,13 @@ export const PostId = () => {
                 Create Argument
               </Link>
             </div>
+            <Link
+              hidden={data.fetchPost.post.user.id !== user.id ? true : false}
+              to={"/deletePost/" + postIdTyped}
+              className=" ml-5 text-white bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 "
+            >
+              Delete post
+            </Link>
           </div>
         </div>
       </div>

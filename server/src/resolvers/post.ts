@@ -21,6 +21,7 @@ import { User } from "../entities/User";
 import { orderSwitch, outputTopics } from "../utils/paginated Utils";
 import { FindOptionsOrder } from "typeorm";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { MysqlConnectionOptions } from "typeorm/driver/mysql/MysqlConnectionOptions";
 
 @Resolver(Post)
 @InputType()
@@ -65,6 +66,14 @@ class postsResponse {
   errors?: FieldError[];
   @Field(() => [Post], { nullable: true })
   posts?: Post[];
+}
+
+@ObjectType()
+class boolError {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+  @Field(() => Boolean, { nullable: true })
+  success?: boolean;
 }
 
 @ObjectType()
@@ -257,5 +266,35 @@ export class PostResolver {
         errors: [{ field: "direction", error: "Invalid direction" }],
       };
     }
+  }
+
+  @Mutation(() => boolError)
+  async deletePost(
+    @Arg("inputs") postId: postIdClass,
+    @Ctx() { req }: MyContext
+  ): Promise<boolError> {
+    let userOrError = await verifyUser(req.headers["authorization"]!);
+    if (userOrError.errors) {
+      return { errors: userOrError.errors };
+    } else if (!userOrError.user) {
+      return { errors: [{ field: "user", error: "No user!" }] };
+    }
+    let user = userOrError.user;
+    console.log("user", user);
+    let postRepo = await conn.getRepository(Post);
+    try {
+      let success = await postRepo.delete({
+        id: postId.postId,
+        user: { id: user!.id },
+      });
+      if (success.affected == 1) {
+        return { success: true };
+      } else if (success.affected == 0) {
+        return { success: false };
+      }
+    } catch (e) {
+      return { errors: [{ error: e, field: "Proabably_user" }] };
+    }
+    return { success: false };
   }
 }

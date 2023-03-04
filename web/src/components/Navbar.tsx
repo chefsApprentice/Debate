@@ -51,11 +51,11 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
       </div>
       <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
         <div className="text-sm lg:flex-grow">
-          <input
+          {/* <input
             className="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
             type="search"
             placeholder="Enter a topic or post here!"
-          ></input>
+          ></input> */}
         </div>
         <div key={props.user?.username!} className="pl-4">
           {props.user ? (
@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
                 to={"/users/" + props!.user!.id}
                 className="text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400"
               >
-                Profile:
+                Profile : {props.user.username}
               </Link>
               <button
                 onClick={() => signOut(props.setUser, navigate)}
