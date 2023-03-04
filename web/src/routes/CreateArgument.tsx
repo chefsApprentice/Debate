@@ -15,7 +15,7 @@ export let PointsRender: React.FC<PointsRenderProps> = (
   props: PointsRenderProps
 ) => {
   let pointsArr = [];
-  for (let i = 0; i <= props.points.length; i++) {
+  for (let i = 0; i < props.points.length; i++) {
     pointsArr.push(
       <div className="mt-5">
         <textarea
@@ -30,16 +30,53 @@ export let PointsRender: React.FC<PointsRenderProps> = (
           }}
           required
         />
-        <label
+        {/* <label
           htmlFor={"pointsInput" + i.toString}
           className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-indigo-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
         >
           Point {}
-        </label>
+        </label> */}
       </div>
     );
   }
-  if (pointsArr) return <>{pointsArr}</>;
+  if (pointsArr)
+    return (
+      <>
+        <h1 className="block mb-2 text-sm font-lg font-bold text-gray-600 dark:text-white">
+          Points:
+        </h1>
+        {pointsArr}
+      </>
+    );
+  return <></>;
+};
+
+interface ReferencesRenderProps {
+  refState: any;
+  setRefState: any;
+}
+
+export const ReferencesRender: React.FC<ReferencesRenderProps> = (
+  props: ReferencesRenderProps
+) => {
+  let renderArr = [];
+  for (let i = 0; i < props.refState.length; i++) {
+    renderArr.push(
+      <div className="mt-5">
+        <input
+          type="number"
+          name={"ri" + i.toString}
+          id={"ri" + i.toString}
+          className="block max-w-xs text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-400 peer m-2 "
+          onChange={(e) => {
+            props.refState[i] = +e.target.value;
+            props.setRefState(props.refState);
+          }}
+        ></input>
+      </div>
+    );
+  }
+  if (renderArr) return <>{renderArr}</>;
   return <></>;
 };
 
@@ -47,19 +84,23 @@ export const CreateArgument = () => {
   const [user, setUser]: any = useState();
   const [userSet, setUserSet] = useState(false);
   const [points, setPoints] = useState(["Type up your point."]);
+  const [referencesState, setReferencesState]: [number[], any] = useState([]);
   const titleRef = React.useRef<HTMLInputElement>(null);
   const typeRef = React.useRef<HTMLSelectElement>(null);
   AutoLogin(setUser, userSet, setUserSet);
 
   const CREATE_ARGUMENT = gql`
-    mutation ($inputs: createPostInput!) {
-      createPost(inputs: $inputs) {
+    mutation createArgument($inputs: createArgumentInput!) {
+      createArgument(inputs: $inputs) {
         errors {
           error
           field
         }
-        post {
+        argument {
           id
+          post {
+            id
+          }
         }
       }
     }
@@ -99,7 +140,7 @@ export const CreateArgument = () => {
         postId: postIdTyped,
         title: title,
         points: points,
-        // references: references,
+        references: referencesState,
         type: type,
       },
     };
@@ -112,7 +153,7 @@ export const CreateArgument = () => {
   if (data) {
     console.log("D", data);
     console.log("navigating");
-    if (data.createPost.post.id) {
+    if (data.createArgument?.argument.id) {
       return (
         <div>
           <Navbar user={user} setUser={setUser} />
@@ -121,13 +162,13 @@ export const CreateArgument = () => {
               <h1 className="text-4xl font-xl font-bold ">Create a debate:</h1>{" "}
               <br />
               <p className="font-base mb-5">
-                Post created, visit the below link
+                Argument created, return to the debate link
               </p>
               <Link
-                to={"/posts/" + data.createPost.post.id}
+                to={"/posts/" + data.createArgument?.argument.post.id}
                 className="text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center p-5 w-40 m-auto mt-20"
               >
-                Visit your post
+                Visit your argument
               </Link>
             </div>
           </div>
@@ -168,11 +209,11 @@ export const CreateArgument = () => {
     <div className="mb-10">
       <Navbar user={user} setUser={setUser} />
       <div className="flex h-screen justify-center ml-32 mr-32 p-6 rounded-lg mb-10 p-10 top-0 ">
-        <div className="m-auto">
+        <div className="m-auto min-w-full">
           <h1 className="text-4xl font-xl font-bold ">Create an argument :</h1>{" "}
           <br />
-          <form className="mt-5">
-            <div className="relative z-0 w-full mb-6 group">
+          <form className="mt-5 min-w-auto w-full">
+            <div className="relative z-0 min-w-full mb-6 group">
               <input
                 type="text"
                 name="titleInput"
@@ -223,6 +264,39 @@ export const CreateArgument = () => {
                 }}
               >
                 Add point
+              </button>
+            </div>
+            <h1 className="block mb-2 text-sm font-lg font-bold text-gray-600 dark:text-white">
+              {" "}
+              References:
+            </h1>
+            <div
+              className="flex flex-wrap z-0 w-full mb-6 group m-2"
+              id={`${referencesState.length}`}
+            >
+              <ReferencesRender
+                refState={referencesState}
+                setRefState={setReferencesState}
+              />
+              <button
+                type="button"
+                className=" mt-2 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 "
+                onClick={() => {
+                  let newRefArr: number[] = [...referencesState];
+                  newRefArr.push(0);
+                  setReferencesState(newRefArr);
+                }}
+              >
+                Add reference
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  console.log(referencesState);
+                  console.log(typeof referencesState[0]);
+                }}
+              >
+                console log refs
               </button>
             </div>
             <button

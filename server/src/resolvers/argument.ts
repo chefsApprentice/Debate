@@ -10,7 +10,7 @@ import {
   Resolver,
 } from "type-graphql";
 import { Post } from "../entities/Post";
-import { FieldError, MyContext, rateInput } from "../types";
+import { boolError, FieldError, MyContext, rateInput } from "../types";
 import { conn } from "..";
 import { User } from "../entities/User";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -75,6 +75,7 @@ export class ArgumentResolver {
         post: { user: true },
       },
     });
+    console.log("argumentsssssssssssssssssssssssssssss", argument);
     if (!argument) {
       return {
         errors: [{ field: "argId", error: "That argument doesn't exist" }],
@@ -270,5 +271,34 @@ export class ArgumentResolver {
         errors: [{ field: "direction", error: "Invalid direction" }],
       };
     }
+  }
+
+  @Mutation(() => boolError)
+  async deleteArgument(
+    @Arg("inputs") argId: argumentIdClass,
+    @Ctx() { req }: MyContext
+  ): Promise<boolError> {
+    let userOrError = await verifyUser(req.headers["authorization"]!);
+    if (userOrError.errors) {
+      return { errors: userOrError.errors };
+    } else if (!userOrError.user) {
+      return { errors: [{ field: "user", error: "No user!" }] };
+    }
+    let user = userOrError.user;
+    let argRepo = await conn.getRepository(Argument);
+    try {
+      let success = await argRepo.delete({
+        id: argId.argId,
+        user: { id: user!.id },
+      });
+      if (success.affected == 1) {
+        return { success: true };
+      } else if (success.affected == 0) {
+        return { success: false };
+      }
+    } catch (e) {
+      return { errors: [{ error: e, field: "Proabably_user" }] };
+    }
+    return { success: false };
   }
 }

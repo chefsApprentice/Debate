@@ -33,6 +33,7 @@ const verifyUser_1 = require("../utils/verifyUser");
 const User_1 = require("../entities/User");
 const paginated_Utils_1 = require("../utils/paginated Utils");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const Argument_1 = require("../entities/Argument");
 let postsInput = class postsInput {
 };
 __decorate([
@@ -90,19 +91,6 @@ __decorate([
 postsResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], postsResponse);
-let boolError = class boolError {
-};
-__decorate([
-    (0, type_graphql_1.Field)(() => [types_1.FieldError], { nullable: true }),
-    __metadata("design:type", Array)
-], boolError.prototype, "errors", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(() => Boolean, { nullable: true }),
-    __metadata("design:type", Boolean)
-], boolError.prototype, "success", void 0);
-boolError = __decorate([
-    (0, type_graphql_1.ObjectType)()
-], boolError);
 let aPostResponse = class aPostResponse {
 };
 __decorate([
@@ -282,24 +270,31 @@ class PostResolver {
                 return { errors: [{ field: "user", error: "No user!" }] };
             }
             let user = userOrError.user;
-            console.log("user", user);
             let postRepo = yield index_1.conn.getRepository(Post_1.Post);
+            let argRepo = yield index_1.conn.getRepository(Argument_1.Argument);
             try {
-                let success = yield postRepo.delete({
-                    id: postId.postId,
-                    user: { id: user.id },
+                let post = yield postRepo.findOne({
+                    where: { id: postId.postId, user: { id: user.id } },
+                    relations: { arguments: true },
                 });
-                if (success.affected == 1) {
-                    return { success: true };
+                if (!post) {
+                    return { errors: [{ error: "No post", field: "postId" }] };
                 }
-                else if (success.affected == 0) {
+                let oldArgArr = post.arguments;
+                for (let i = 0; i < oldArgArr.length; i++) {
+                    argRepo.delete({ id: oldArgArr[i].id });
+                }
+                let postReturned = yield postRepo.remove(post);
+                if (!postReturned) {
                     return { success: false };
+                }
+                else {
+                    return { success: true };
                 }
             }
             catch (e) {
                 return { errors: [{ error: e, field: "Proabably_user" }] };
             }
-            return { success: false };
         });
     }
 }
@@ -340,7 +335,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "ratePost", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => boolError),
+    (0, type_graphql_1.Mutation)(() => types_1.boolError),
     __param(0, (0, type_graphql_1.Arg)("inputs")),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),

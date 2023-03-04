@@ -47,11 +47,11 @@ export let argumentsCard = (
           </Link>
         </div>
         <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
-          <a href="#">
+          <Link to={"/arguments/" + id}>
             <h5 className="mb-2 text-2xl font-bold tracking-tight  ">
               {type} - {title}
             </h5>
-          </a>
+          </Link>
         </div>
         <div className="font-normal ">
           {points.map((p, i) => (
@@ -65,9 +65,12 @@ export let argumentsCard = (
           <p className="font-bold">References :</p>
           {references.map((ref) => (
             <div>
-              <a href="#" className="mr-1 text-indigo-400 font-bold">
+              <Link
+                to={"/arguments/" + ref}
+                className="mr-1 text-indigo-400 font-bold"
+              >
                 {ref} ,
-              </a>
+              </Link>
             </div>
           ))}
         </div>
@@ -75,10 +78,12 @@ export let argumentsCard = (
           <p className="font-bold">{"Referenced By : "} </p>
           {referencedBy.map((ref) => (
             <div>
-              <a href="#" className="mr-1 text-indigo-400 font-bold">
-                {" "}
+              <Link
+                to={"/arguments/" + ref}
+                className="mr-1 text-indigo-400 font-bold"
+              >
                 {ref} ,
-              </a>
+              </Link>
             </div>
           ))}
         </div>
@@ -219,28 +224,28 @@ export const PostId = () => {
       <div className="flex items-center justify-between flex-wrap p-10 ">
         <div className="rounded bg-white text-gray-900 m-auto text-center ">
           <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
-            <Link to={"/topics/" + `${data.fetchPost.post.topic}`}>
+            <Link to={"/topics/" + `${data.fetchPost?.post?.topic}`}>
               <h5 className="mb-2 text-2xl font-bold tracking-tight  ">
-                {data.fetchPost.post.topic}
+                {data.fetchPost?.post?.topic}
               </h5>
             </Link>
           </div>
           <h1 className="text-7xl font-bold font-lg mb-2">
-            {data.fetchPost.post.title}
+            {data.fetchPost?.post?.title}
           </h1>
           <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
-            <Link to={"/users/" + data.fetchPost.post.user.id}>
+            <Link to={"/users/" + data.fetchPost?.post?.user?.id}>
               <h5 className="mb-2 text-lg font-bold tracking-tight  ">
                 <p className="font-normal">posted by:</p>{" "}
-                {data.fetchPost.post.user.username}
+                {data.fetchPost.post?.user?.username}
               </h5>
             </Link>
           </div>
           <p className="font-normal font-lg">
-            {data.fetchPost.post.description}
+            {data.fetchPost?.post?.description}
           </p>
           <div className="flex items-center justify-between text-center mt-2">
-            <Ranking ranking={data.fetchPost.post.ranking} />
+            <Ranking ranking={data.fetchPost?.post?.ranking} />
             <div id="modal">
               <Link
                 to={"/createArgument/" + postIdTyped}
@@ -250,7 +255,7 @@ export const PostId = () => {
               </Link>
             </div>
             <Link
-              hidden={data.fetchPost.post.user.id !== user.id ? true : false}
+              hidden={data.fetchPost.post.user?.id !== user?.id ? true : false}
               to={"/deletePost/" + postIdTyped}
               className=" ml-5 text-white bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 "
             >

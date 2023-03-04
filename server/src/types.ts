@@ -29,3 +29,11 @@ export class rateInput {
   @Field()
   direction!: string;
 }
+
+@ObjectType()
+export class boolError {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+  @Field(() => Boolean, { nullable: true })
+  success?: boolean;
+}

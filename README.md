@@ -33,7 +33,7 @@ npm run start
 
 - [x] create posts
 - [x] create arguments
-  - [ ] Add referencing
+  - [x] Add referencing
 - [x] user page
 - [ ] ranking
 - [x] create user
@@ -41,7 +41,7 @@ npm run start
 - [x] Add paginated posts using button and state
   - [x] Add it whever paginated posts are used
 - [x] Delete posts
-  - [ ] Delete Arguments
+  - [x] Delete Arguments
 - [ ] Minor fixes
   - [ ] Set all / followed disabled if selected
   - [ ] topics followed, show topics followed button

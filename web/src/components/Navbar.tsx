@@ -25,7 +25,7 @@ let signOut = (setUser: any, navigate: any) => {
 export const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
   const navigate = useNavigate();
   return (
-    <nav className="flex items-center justify-between flex-wrap bg-white-500 p-6 border-indigo-300 border-b">
+    <nav className="flex items-center justify-between flex-wrap bg-white-500 p-6 border-indigo-200 border-b-2">
       <div className="flex items-center flex-shrink-0 text-indigo-300 mr-6">
         <a
           href="/"

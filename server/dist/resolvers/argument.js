@@ -102,6 +102,7 @@ class ArgumentResolver {
                     post: { user: true },
                 },
             });
+            console.log("argumentsssssssssssssssssssssssssssss", argument);
             if (!argument) {
                 return {
                     errors: [{ field: "argId", error: "That argument doesn't exist" }],
@@ -263,6 +264,35 @@ class ArgumentResolver {
             }
         });
     }
+    deleteArgument(argId, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let userOrError = yield (0, verifyUser_1.verifyUser)(req.headers["authorization"]);
+            if (userOrError.errors) {
+                return { errors: userOrError.errors };
+            }
+            else if (!userOrError.user) {
+                return { errors: [{ field: "user", error: "No user!" }] };
+            }
+            let user = userOrError.user;
+            let argRepo = yield __1.conn.getRepository(Argument_1.Argument);
+            try {
+                let success = yield argRepo.delete({
+                    id: argId.argId,
+                    user: { id: user.id },
+                });
+                if (success.affected == 1) {
+                    return { success: true };
+                }
+                else if (success.affected == 0) {
+                    return { success: false };
+                }
+            }
+            catch (e) {
+                return { errors: [{ error: e, field: "Proabably_user" }] };
+            }
+            return { success: false };
+        });
+    }
 }
 __decorate([
     (0, type_graphql_1.Query)(() => anArgumentResponse),
@@ -287,5 +317,13 @@ __decorate([
     __metadata("design:paramtypes", [types_1.rateInput, Object]),
     __metadata("design:returntype", Promise)
 ], ArgumentResolver.prototype, "rateArgument", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => types_1.boolError),
+    __param(0, (0, type_graphql_1.Arg)("inputs")),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [argumentIdClass, Object]),
+    __metadata("design:returntype", Promise)
+], ArgumentResolver.prototype, "deleteArgument", null);
 exports.ArgumentResolver = ArgumentResolver;
 //# sourceMappingURL=argument.js.map

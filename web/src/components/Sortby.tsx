@@ -27,7 +27,7 @@ export const SortBy: React.FC<SortByProps> = ({
 
   // const [selectedSort, setSelectedSort] = useState({ id: 1, name: "Newest" });
   return (
-    <div className="zindex-2 relative w-full cursor-default rounded-lg bg-indigo-300 text-sm text-white py-2 pl-3 pr-10 text-left font-medium hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300">
+    <div className="text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-indigo-200 dark:hover:bg-indigo-300 dark:focus:ring-indigo-400">
       <Listbox value={selectedSort} onChange={setSelectedSort}>
         <Listbox.Button>{selectedSort.name}</Listbox.Button>
         <Listbox.Options>

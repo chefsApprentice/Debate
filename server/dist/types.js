@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rateInput = exports.OperationFieldResponse = exports.FieldError = void 0;
+exports.boolError = exports.rateInput = exports.OperationFieldResponse = exports.FieldError = void 0;
 const type_graphql_1 = require("type-graphql");
 let FieldError = class FieldError {
 };
@@ -53,4 +53,18 @@ rateInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], rateInput);
 exports.rateInput = rateInput;
+let boolError = class boolError {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => [FieldError], { nullable: true }),
+    __metadata("design:type", Array)
+], boolError.prototype, "errors", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Boolean, { nullable: true }),
+    __metadata("design:type", Boolean)
+], boolError.prototype, "success", void 0);
+boolError = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], boolError);
+exports.boolError = boolError;
 //# sourceMappingURL=types.js.map

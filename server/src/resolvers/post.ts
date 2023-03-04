@@ -11,6 +11,7 @@ import {
 } from "type-graphql";
 import { Post } from "../entities/Post";
 import {
+  boolError,
   FieldError,
   MyContext,
   OperationFieldResponse,
@@ -22,6 +23,7 @@ import { orderSwitch, outputTopics } from "../utils/paginated Utils";
 import { FindOptionsOrder } from "typeorm";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { MysqlConnectionOptions } from "typeorm/driver/mysql/MysqlConnectionOptions";
+import { Argument } from "../entities/Argument";
 
 @Resolver(Post)
 @InputType()
@@ -66,14 +68,6 @@ class postsResponse {
   errors?: FieldError[];
   @Field(() => [Post], { nullable: true })
   posts?: Post[];
-}
-
-@ObjectType()
-class boolError {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[];
-  @Field(() => Boolean, { nullable: true })
-  success?: boolean;
 }
 
 @ObjectType()
@@ -280,21 +274,31 @@ export class PostResolver {
       return { errors: [{ field: "user", error: "No user!" }] };
     }
     let user = userOrError.user;
-    console.log("user", user);
+
     let postRepo = await conn.getRepository(Post);
+    let argRepo = await conn.getRepository(Argument);
     try {
-      let success = await postRepo.delete({
-        id: postId.postId,
-        user: { id: user!.id },
+      let post = await postRepo.findOne({
+        where: { id: postId.postId, user: { id: user!.id } },
+        relations: { arguments: true },
       });
-      if (success.affected == 1) {
-        return { success: true };
-      } else if (success.affected == 0) {
+
+      if (!post) {
+        return { errors: [{ error: "No post", field: "postId" }] };
+      }
+
+      let oldArgArr = post!.arguments;
+      for (let i = 0; i < oldArgArr!.length; i++) {
+        argRepo.delete({ id: oldArgArr![i].id });
+      }
+      let postReturned = await postRepo.remove(post!);
+      if (!postReturned) {
         return { success: false };
+      } else {
+        return { success: true };
       }
     } catch (e) {
       return { errors: [{ error: e, field: "Proabably_user" }] };
     }
-    return { success: false };
   }
 }
