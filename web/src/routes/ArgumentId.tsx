@@ -154,7 +154,11 @@ export const ArgumentId = () => {
             {data.fetchArgument.argument.post.description}
           </p>
           <div className="flex items-center justify-between text-center mt-2">
-            <Ranking ranking={data.fetchArgument.argument.post.ranking} />
+            <Ranking
+              ranking={data.fetchArgument.argument.post.ranking}
+              targetId={data.fetchArgument.argument.post.id}
+              typeRank="post"
+            />
             <div id="modal">
               <Link
                 to={"/createArgument/" + data.fetchArgument.argument.post.id}
@@ -228,7 +232,11 @@ export const ArgumentId = () => {
           </div>
 
           <div className="flex items-center justify-between text-center mt-2">
-            <Ranking ranking={data.fetchArgument.argument.ranking} />
+            <Ranking
+              ranking={data.fetchArgument.argument.ranking}
+              targetId={data.fetchArgument.argument.id}
+              typeRank="argument"
+            />
             <Link
               hidden={
                 data.fetchArgument.argument.user.id !== user.id ? true : false

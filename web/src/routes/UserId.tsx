@@ -1,10 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { argumentsCard } from "../components/argumentsCard";
 import { Navbar } from "../components/Navbar";
 import { PostCard, postsJsx } from "../components/PostCard";
 import { AutoLogin } from "../utils/AutoLogin";
-import { argumentsCard } from "./PostId";
 
 export const UserId = () => {
   let { userId } = useParams();

@@ -34,8 +34,9 @@ npm run start
 - [x] create posts
 - [x] create arguments
   - [x] Add referencing
+  - [x] Add copy id to arguments
 - [x] user page
-- [ ] ranking
+- [x] ranking
 - [x] create user
 - [x] update navbar everyhwere / add autologin everywhere
 - [x] Add paginated posts using button and state

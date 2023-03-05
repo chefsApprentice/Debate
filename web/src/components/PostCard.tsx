@@ -72,7 +72,7 @@ export const postsJsx = (posts: any, extraUserIdArr?: [string, number]) => {
             <p className="font-normal ">{description}</p>
           </Link>
         </div>
-        <Ranking ranking={ranking} />
+        <Ranking ranking={ranking} targetId={id} typeRank="post" />
       </div>
     )
   );

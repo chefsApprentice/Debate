@@ -1,96 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { argumentsCard } from "../components/argumentsCard";
 import { Navbar } from "../components/Navbar";
 import { Ranking } from "../components/Ranking";
 import { AutoLogin } from "../utils/AutoLogin";
-
-export let argumentsCard = (
-  argumentsArr: any,
-  extraUserIdArr?: [string, number]
-) => {
-  return argumentsArr.map(
-    ({
-      id,
-      title,
-      type,
-      points,
-      ranking,
-      references,
-      referencedBy,
-      user,
-    }: {
-      id: number;
-      title: string;
-      type: string;
-      points: string[];
-      ranking: number;
-      references: number[];
-      referencedBy: number[];
-      user: any;
-    }) => (
-      <div
-        className="  ml-10 mr-10 p-6 bg-white border border-indigo-200 rounded-lg mt-4 mb-4 "
-        key={id}
-      >
-        <div className="rounded bg-white hover:text-indigo-300 text-gray-900 ">
-          <Link
-            to={
-              extraUserIdArr
-                ? "/users/" + extraUserIdArr![1]
-                : "/users/" + user.id
-            }
-          >
-            <h6 className="text-xl font-bold tracking-tight ">
-              {extraUserIdArr ? extraUserIdArr![0] : user.username}
-            </h6>
-          </Link>
-        </div>
-        <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
-          <Link to={"/arguments/" + id}>
-            <h5 className="mb-2 text-2xl font-bold tracking-tight  ">
-              {type} - {title}
-            </h5>
-          </Link>
-        </div>
-        <div className="font-normal ">
-          {points.map((p, i) => (
-            <div className="mt-4 mb-4">
-              {i + 1}: {p}
-            </div>
-          ))}
-        </div>
-        <Ranking ranking={ranking} />
-        <div className="flex mt-2">
-          <p className="font-bold">References :</p>
-          {references.map((ref) => (
-            <div>
-              <Link
-                to={"/arguments/" + ref}
-                className="mr-1 text-indigo-400 font-bold"
-              >
-                {ref} ,
-              </Link>
-            </div>
-          ))}
-        </div>
-        <div className="flex mt-2">
-          <p className="font-bold">{"Referenced By : "} </p>
-          {referencedBy.map((ref) => (
-            <div>
-              <Link
-                to={"/arguments/" + ref}
-                className="mr-1 text-indigo-400 font-bold"
-              >
-                {ref} ,
-              </Link>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  );
-};
 
 export type postIdClass = {
   postId: number;
@@ -224,7 +138,7 @@ export const PostId = () => {
       <div className="flex items-center justify-between flex-wrap p-10 ">
         <div className="rounded bg-white text-gray-900 m-auto text-center ">
           <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
-            <Link to={"/topics/" + `${data.fetchPost?.post?.topic}`}>
+            <Link to={`${"/topics/" + data.fetchPost?.post?.topic}`}>
               <h5 className="mb-2 text-2xl font-bold tracking-tight  ">
                 {data.fetchPost?.post?.topic}
               </h5>
@@ -245,7 +159,11 @@ export const PostId = () => {
             {data.fetchPost?.post?.description}
           </p>
           <div className="flex items-center justify-between text-center mt-2">
-            <Ranking ranking={data.fetchPost?.post?.ranking} />
+            <Ranking
+              ranking={data.fetchPost?.post?.ranking}
+              targetId={data.fetchPost?.post?.id}
+              typeRank="post"
+            />
             <div id="modal">
               <Link
                 to={"/createArgument/" + postIdTyped}
