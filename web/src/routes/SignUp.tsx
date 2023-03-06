@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import React from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { AutoLogin } from "../utils/AutoLogin";
 import { Errors } from "./SignIn";
@@ -54,11 +55,11 @@ export default function SignUp() {
   };
 
   if (data) {
-    console.log("D", data);
-    if (data.register.token) {
+    if (data.register?.token) {
       localStorage.setItem("token", data.register.token);
       if (userSet === false) {
-        setUser(data.register.user);
+        let userNew = { ...data!.login!.user };
+        setUser(userNew);
         setUserSet(true);
       }
     }
@@ -97,6 +98,12 @@ export default function SignUp() {
               Thank you for signing up.
             </h1>
             <br />
+            <Link
+              to="/"
+              className="text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 "
+            >
+              Return to home page
+            </Link>
           </div>
         </div>
       </div>
@@ -104,7 +111,6 @@ export default function SignUp() {
   }
 
   if (data?.register?.errors) {
-    console.log("err", data.register.errors);
     return (
       <div>
         <Navbar user={user} setUser={setUser} />

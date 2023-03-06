@@ -96,7 +96,6 @@ export const PostCard: React.FC<PostCardProps> = (variables) => {
 
   if (data?.paginatedPosts?.errors) {
     // Work with errors here
-    console.log("es", data.errors);
   }
 
   // if (data.paginatedPosts?.posts?.length === 0) {
@@ -106,7 +105,6 @@ export const PostCard: React.FC<PostCardProps> = (variables) => {
   //     </>
   //   );
   // }
-  console.log("D", data.paginatedPosts.posts);
 
   return (
     <>

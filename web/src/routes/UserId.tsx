@@ -100,7 +100,6 @@ export const UserId = () => {
 
   if (data.fetchUser.errors) {
     // Work with errors here
-    console.log("es", data.errors);
     if (data.fetchPost.errors[0].error === "That user doesn't exist")
       return (
         <div>
@@ -121,10 +120,6 @@ export const UserId = () => {
           </div>
         </div>
       );
-  }
-
-  if (data.fetchUser.user) {
-    console.log("user", data.fetchUser);
   }
 
   return (

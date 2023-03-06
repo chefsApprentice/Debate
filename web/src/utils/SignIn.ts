@@ -24,9 +24,5 @@ export const SignInGql = (variables: any) => {
     variables,
   });
 
-  if (data) {
-    console.log("D", data);
-  }
-
   return { data };
 };

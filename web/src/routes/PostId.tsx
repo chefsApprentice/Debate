@@ -105,7 +105,6 @@ export const PostId = () => {
 
   if (data.fetchPost.errors) {
     // Work with errors here
-    console.log("es", data.errors);
     if (data.fetchPost.errors[0].error === "That post doesn't exist")
       return (
         <div>
@@ -125,10 +124,6 @@ export const PostId = () => {
           </div>
         </div>
       );
-  }
-
-  if (data.fetchPost) {
-    console.log("D", data.fetchPost);
   }
 
   return (

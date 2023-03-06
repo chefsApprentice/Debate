@@ -13,7 +13,6 @@ export const CreatePost = () => {
   const descriptionRef = React.useRef<HTMLTextAreaElement>(null);
   AutoLogin(setUser, userSet, setUserSet);
   let { topic } = useParams();
-  console.log("topciname", topic);
 
   const CREATE_POST = gql`
     mutation ($inputs: createPostInput!) {
@@ -67,14 +66,10 @@ export const CreatePost = () => {
       },
     };
 
-    console.log("variables", JSON.stringify(variables));
-
     createPostLazy({ variables });
   };
 
   if (data) {
-    console.log("D", data);
-    console.log("navigating");
     if (data.createPost.post.id) {
       return (
         <div>

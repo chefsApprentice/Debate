@@ -49,7 +49,6 @@ export default function SignIn() {
   const [signInLazy, { loading, error, data }] = useMutation(SIGNIN_USER);
 
   if (data) {
-    console.log("D", data);
     if (data.login?.token) {
       localStorage.setItem("token", data.login.token);
       if (userSet === false) {
@@ -58,10 +57,6 @@ export default function SignIn() {
         setUserSet(true);
       }
     }
-  }
-
-  if (error) {
-    console.log("Big error", error);
   }
 
   if (loading) {

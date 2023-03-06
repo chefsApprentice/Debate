@@ -34,7 +34,6 @@ const Home = () => {
   AutoLogin(setUser, userSet, setUserSet);
   // } else {
   // console.log("user", user);
-  console.log("welp");
 
   // }, []);
 

@@ -97,12 +97,9 @@ export const Topic = () => {
                 !followed
                   ? () => {
                       lazyFollow({ variables: followVariables });
-                      console.log("followed data", followedData);
                       setFollowed(true);
                     }
-                  : () => {
-                      console.log("UnFollow");
-                    }
+                  : () => {}
               }
               className={
                 "text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center p-5 w-40 m-auto mt-5"

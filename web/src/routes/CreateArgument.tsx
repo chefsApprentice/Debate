@@ -145,14 +145,10 @@ export const CreateArgument = () => {
       },
     };
 
-    console.log("variables", JSON.stringify(variables));
-
     createArgumentLazy({ variables });
   };
 
   if (data) {
-    console.log("D", data);
-    console.log("navigating");
     if (data.createArgument?.argument.id) {
       return (
         <div>
@@ -258,7 +254,6 @@ export const CreateArgument = () => {
                 className=" mt-2 text-white bg-indigo-300 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 "
                 onClick={() => {
                   let newPoints = [...points];
-                  console.log("rahh fam");
                   newPoints.push("Type up your point.");
                   setPoints(newPoints);
                 }}
@@ -288,15 +283,6 @@ export const CreateArgument = () => {
                 }}
               >
                 Add reference
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  console.log(referencesState);
-                  console.log(typeof referencesState[0]);
-                }}
-              >
-                console log refs
               </button>
             </div>
             <button
