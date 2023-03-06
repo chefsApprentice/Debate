@@ -3,7 +3,6 @@ export const outputTopics = (topicsArr: string[]) => {
   for (let i = 0; i < topicsArr.length; i++) {
     topicsOutput.push({ topic: topicsArr[i] });
   }
-  console.log("topics output", topicsOutput);
   return topicsOutput;
 };
 

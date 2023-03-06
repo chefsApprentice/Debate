@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -33,11 +33,27 @@ export const AutoLogin = async (
     }
   `;
 
+  const LOGOUT = gql`
+    mutation {
+      logout {
+        error {
+          error
+          field
+        }
+        success
+      }
+    }
+  `;
+
+  const [lazyLogout, { loading: loadingOut, error: errorOut, data: dataOut }] =
+    useMutation(LOGOUT);
   const { loading, error, data } = await useQuery(AUTOLOGIN);
+
   let token = await localStorage.getItem("token");
   if (token === "null") {
     await localStorage.clear();
     setUserSet(false);
+    if (dataOut?.logout) return;
     // setUser(undefined);
   } else if (userSet) {
   } else if (token) {

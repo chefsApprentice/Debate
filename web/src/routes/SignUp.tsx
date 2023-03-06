@@ -58,7 +58,7 @@ export default function SignUp() {
     if (data.register?.token) {
       localStorage.setItem("token", data.register.token);
       if (userSet === false) {
-        let userNew = { ...data!.login!.user };
+        let userNew = { ...data!.register!.user };
         setUser(userNew);
         setUserSet(true);
       }

@@ -35,10 +35,10 @@ const conn = new typeorm_1.DataSource({
     host: "localhost",
     database: "debate",
     schema: "debateSchema",
-    logging: true,
+    logging: false,
     username: process.env.PG_USERNAME,
     password: "123456Dog!",
-    synchronize: true,
+    synchronize: false,
     migrations: [path_1.default.join(__dirname, "./migrations/.{js,ts}*")],
     entities: [User_1.User, Post_1.Post, Argument_1.Argument],
 });

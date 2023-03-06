@@ -262,7 +262,7 @@ export class UserResolver {
 
   @Mutation(() => logoutResponse)
   async logout(@Ctx() { res }: MyContext): Promise<logoutResponse> {
-    res.clearCookie("uid");
+    res.clearCookie("token");
     return { success: true };
   }
 }

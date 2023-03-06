@@ -75,7 +75,6 @@ export class ArgumentResolver {
         post: { user: true },
       },
     });
-    console.log("argumentsssssssssssssssssssssssssssss", argument);
     if (!argument) {
       return {
         errors: [{ field: "argId", error: "That argument doesn't exist" }],
@@ -167,7 +166,6 @@ export class ArgumentResolver {
         where: { id: inputs.references[i] },
       });
       if (!referencedArg) {
-        console.log("hit");
         let errorString =
           "argument of id: " +
           <string>(<unknown>inputs.references[i]) +

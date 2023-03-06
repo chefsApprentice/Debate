@@ -6,7 +6,6 @@ const outputTopics = (topicsArr) => {
     for (let i = 0; i < topicsArr.length; i++) {
         topicsOutput.push({ topic: topicsArr[i] });
     }
-    console.log("topics output", topicsOutput);
     return topicsOutput;
 };
 exports.outputTopics = outputTopics;

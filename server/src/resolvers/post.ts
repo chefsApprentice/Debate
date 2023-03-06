@@ -99,7 +99,7 @@ export class PostResolver {
     // Turn order variables from string to whitelisted dictionairy using switch func
     let order = orderSwitch(inputs.sortBy[0], inputs.sortBy[1]);
     // The amount of posts selected by each query
-    const selectionAmount = 4;
+    const selectionAmount = 20;
     let skip = inputs.scrolledDown * selectionAmount;
 
     const postRepo = conn.getRepository(Post);

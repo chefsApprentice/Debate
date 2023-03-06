@@ -26,10 +26,10 @@ const conn = new DataSource({
   // url: "debate",
   schema: "debateSchema",
   // url: "localhost:5432",
-  logging: true,
+  logging: false,
   username: <string>process.env.PG_USERNAME!,
   password: "123456Dog!",
-  synchronize: true,
+  synchronize: false,
   migrations: [path.join(__dirname, "./migrations/.{js,ts}*")],
   // entities: [path.join(__dirname, "./entities/.{js,ts}*")],
   entities: [User, Post, Argument],
@@ -38,8 +38,6 @@ export { conn };
 
 const main = async () => {
   await conn.initialize().then(() => console.log("conn init"));
-  // console.log("buh");
-
   await conn.runMigrations();
 
   const app = express();

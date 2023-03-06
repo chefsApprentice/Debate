@@ -46,5 +46,4 @@ npm run start
 - [ ] Minor fixes
   - [ ] Set all / followed disabled if selected
   - [ ] topics followed, show topics followed button
-  <!-- - [ ] Search bar -->
   - [ ] Add the ability to unfollow topics
