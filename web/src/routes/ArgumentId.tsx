@@ -143,7 +143,7 @@ export const ArgumentId = () => {
             {data.fetchArgument.argument.post.title}
           </h1>
           <div className="rounded bg-white hover:text-indigo-300 text-gray-900">
-            <Link to={"/users/" + data.fetchArgument.argument.post.user.id}>
+            <Link to={"/users/" + data.fetchArgument.argument.post.user?.id}>
               <h5 className="mb-2 text-lg font-bold tracking-tight  ">
                 <p className="font-normal">posted by:</p>{" "}
                 {data.fetchArgument.argument.post.user.username}
@@ -156,7 +156,7 @@ export const ArgumentId = () => {
           <div className="flex items-center justify-between text-center mt-2">
             <Ranking
               ranking={data.fetchArgument.argument.post.ranking}
-              targetId={data.fetchArgument.argument.post.id}
+              targetId={data.fetchArgument.argument.post?.id}
               typeRank="post"
             />
             <div id="modal">
@@ -169,7 +169,7 @@ export const ArgumentId = () => {
             </div>
             <Link
               hidden={
-                data.fetchArgument.argument.post.user.id !== user.id
+                data.fetchArgument.argument.post.user?.id !== user?.id
                   ? true
                   : false
               }
@@ -233,13 +233,15 @@ export const ArgumentId = () => {
 
           <div className="flex items-center justify-between text-center mt-2">
             <Ranking
-              ranking={data.fetchArgument.argument.ranking}
-              targetId={data.fetchArgument.argument.id}
+              ranking={data?.fetchArgument?.argument?.ranking}
+              targetId={data?.fetchArgument?.argument?.id}
               typeRank="argument"
             />
             <Link
               hidden={
-                data.fetchArgument.argument.user.id !== user.id ? true : false
+                data?.fetchArgument?.argument?.user?.id !== user?.id
+                  ? true
+                  : false
               }
               to={"/deleteArgument/" + argumentIdTyped}
               className=" ml-5 text-white bg-red-300 hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 "

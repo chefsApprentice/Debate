@@ -136,10 +136,21 @@ export class UserResolver {
     // Use imported library to hash password with 10 salts, need password to be secure
     const hashedPassword = await bcrypt.hash(inputs.password, 10);
 
+    const newUser = new User();
+    newUser.email = inputs.email;
+    newUser.username = inputs.username;
+    newUser.password = hashedPassword;
+    newUser.topicsFollowed = [];
+    newUser.argLikes = [];
+    newUser.argDislikes = [];
+    newUser.likes = [];
+    newUser.dislikes = [];
+
+    let userMade = await conn.manager.save(newUser);
     // Token so that when the user stays logged in after elaving webpage
     // Uses environment varibale for hash for secuity
     const token = await jwt.sign(
-      { username: inputs.username },
+      { userId: userMade.id },
       <string>process.env.HASH_JWT,
       {
         expiresIn: "14d",
@@ -153,18 +164,6 @@ export class UserResolver {
       secure: true,
       sameSite: "none",
     });
-
-    const newUser = new User();
-    newUser.email = inputs.email;
-    newUser.username = inputs.username;
-    newUser.password = hashedPassword;
-    newUser.topicsFollowed = [];
-    newUser.argLikes = [];
-    newUser.argDislikes = [];
-    newUser.likes = [];
-    newUser.dislikes = [];
-
-    await conn.manager.save(newUser);
     return { user: newUser!, token: token };
   }
 

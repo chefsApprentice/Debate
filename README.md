@@ -33,7 +33,7 @@ npm run start
 
 - [x] create posts
 - [x] create arguments
-  - [x] Add referencing
+  <!-- - [x] Add referencing -->
   - [x] Add copy id to arguments
 - [x] user page
 - [x] ranking

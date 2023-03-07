@@ -172,15 +172,6 @@ class UserResolver {
                 };
             }
             const hashedPassword = yield bcrypt_1.default.hash(inputs.password, 10);
-            const token = yield jsonwebtoken_1.default.sign({ username: inputs.username }, process.env.HASH_JWT, {
-                expiresIn: "14d",
-            });
-            res.cookie("uid", token, {
-                maxAge: 14 * 24 * 60 * 60 * 1000,
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
-            });
             const newUser = new User_1.User();
             newUser.email = inputs.email;
             newUser.username = inputs.username;
@@ -190,7 +181,16 @@ class UserResolver {
             newUser.argDislikes = [];
             newUser.likes = [];
             newUser.dislikes = [];
-            yield index_1.conn.manager.save(newUser);
+            let userMade = yield index_1.conn.manager.save(newUser);
+            const token = yield jsonwebtoken_1.default.sign({ userId: userMade.id }, process.env.HASH_JWT, {
+                expiresIn: "14d",
+            });
+            res.cookie("uid", token, {
+                maxAge: 14 * 24 * 60 * 60 * 1000,
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+            });
             return { user: newUser, token: token };
         });
     }
@@ -269,7 +269,7 @@ class UserResolver {
     }
     logout({ res }) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.clearCookie("uid");
+            res.clearCookie("token");
             return { success: true };
         });
     }

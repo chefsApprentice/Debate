@@ -14,7 +14,7 @@ export default function SignUp() {
   const passwordRef = React.useRef<HTMLInputElement>(null);
   const confirmPasswordRef = React.useRef<HTMLInputElement>(null);
 
-  AutoLogin(setUser, userSet, setUserSet);
+  // AutoLogin(setUser, userSet, setUserSet);
 
   const REGISTER_USER = gql`
     mutation ($inputs: registerInput!) {
@@ -54,17 +54,6 @@ export default function SignUp() {
     signUpLazy({ variables });
   };
 
-  if (data) {
-    if (data.register?.token) {
-      localStorage.setItem("token", data.register.token);
-      if (userSet === false) {
-        let userNew = { ...data!.register!.user };
-        setUser(userNew);
-        setUserSet(true);
-      }
-    }
-  }
-
   if (loading) {
     return (
       <div>
@@ -88,6 +77,17 @@ export default function SignUp() {
     );
   }
 
+  if (data) {
+    if (data.register?.token) {
+      console.log("our token", data.register.token);
+      localStorage.setItem("token", data.register.token);
+      if (userSet === false) {
+        let userNew = { ...data!.register!.user };
+        setUser(userNew);
+        setUserSet(true);
+      }
+    }
+  }
   if (user) {
     return (
       <div>
