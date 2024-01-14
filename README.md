@@ -5,6 +5,7 @@ Made inorder to create and reply to debates.
 
 Uses javascript, typescript, tailwind, Graphql and Nodejs.
 
+![Image of the debate app on desktop](https://github.com/chefsApprentice/Debate/blob/main/githubPreview/debate.PNG)
 
 ## Features
 
