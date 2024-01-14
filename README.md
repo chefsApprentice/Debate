@@ -1,14 +1,32 @@
 # Debate
 
-School debate
+A debate social media full stack app, amde for the IB diploma.
+Made inorder to create and reply to debates.
 
-## Prerequisites
+Uses javascript, typescript, tailwind, Graphql and Nodejs.
 
-Have Postgres installed with a schema named debateSchema
-Have node isntalled
-Update the server environemnt varibles with your own
+
+## Features
+
+- [x] Create debates
+  - [x] Create arguments
+  - [x] Can copy argument id and reference in post
+  - [x] Can set topic for debate
+- [x] Autologin with cookies
+- [x] Create user
+- [x] User pages with posts and arguments
+- [x] Paginated posts using button and state (for all post feeds)
+- [x] Delete posts
+  - [x] Delete Arguments
+
 
 ## Instructions to run
+
+### Prerequisites
+
+Have Postgres installed with a schema named debateSchema
+Have node installed
+Populate the server environemnt varibles with your own
 
 ### Server folder
 
@@ -25,25 +43,8 @@ npm run start
 
 ```
 
+npm install
 npm run start
 
 ```
 
-## Things to do
-
-- [x] create posts
-- [x] create arguments
-  <!-- - [x] Add referencing -->
-  - [x] Add copy id to arguments
-- [x] user page
-- [x] ranking
-- [x] create user
-- [x] update navbar everyhwere / add autologin everywhere
-- [x] Add paginated posts using button and state
-  - [x] Add it whever paginated posts are used
-- [x] Delete posts
-  - [x] Delete Arguments
-- [ ] Minor fixes
-  - [ ] Set all / followed disabled if selected
-  - [ ] topics followed, show topics followed button
-  - [ ] Add the ability to unfollow topics
