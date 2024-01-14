@@ -17,6 +17,8 @@ Uses javascript, typescript, tailwind, Graphql and Nodejs.
 - [x] Create user
 - [x] User pages with posts and arguments
 - [x] Paginated posts using button and state (for all post feeds)
+- [x] Can browse based on topic
+- [x] Can follow specific topics
 - [x] Delete posts
   - [x] Delete Arguments
 
