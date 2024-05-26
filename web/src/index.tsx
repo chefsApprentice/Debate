@@ -33,7 +33,9 @@ import DeletePost from "./routes/DeletePost";
 import { ArgumentId } from "./routes/ArgumentId";
 import DeleteArgument from "./routes/DeleteArgument";
 
-const httpLink = createHttpLink({ uri: "http://localhost:4000/graphql" });
+const httpLink = createHttpLink({
+  uri: "http://localhost:4001/graphql",
+});
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
