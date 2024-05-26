@@ -21,15 +21,15 @@ const port = process.env.PORT;
 // const main = async () => {
 const conn = new DataSource({
   type: "postgres",
-  host: "localhost",
-  database: "debate",
+  host: "db",
+  database: "postgres",
   // url: "debate",
-  schema: "debateSchema",
+  // schema: "debateSchema",
   // url: "localhost:5432",
   logging: false,
   username: <string>process.env.PG_USERNAME!,
-  password: "123456Dog!",
-  synchronize: false,
+  password: <string>process.env.PG_PASSWORD!,
+  synchronize: true,
   migrations: [path.join(__dirname, "./migrations/.{js,ts}*")],
   // entities: [path.join(__dirname, "./entities/.{js,ts}*")],
   entities: [User, Post, Argument],
@@ -37,7 +37,19 @@ const conn = new DataSource({
 export { conn };
 
 const main = async () => {
-  await conn.initialize().then(() => console.log("conn init"));
+  let retries = 5;
+  while (retries) {
+    try {
+      await conn.initialize().then(() => console.log("conn init"));
+      break;
+    } catch (err) {
+      console.log(err);
+      retries -= 1;
+      console.log("retries left" + retries);
+      await new Promise((res) => setTimeout(res, 5000));
+    }
+    console.log("Failed connection");
+  }
   await conn.runMigrations();
 
   const app = express();
