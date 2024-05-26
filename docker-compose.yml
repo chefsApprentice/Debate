@@ -1,0 +1,25 @@
+services:
+  db:
+    hostname: db
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: o)ur@Y|*S{t<^T3vBb5ND-~7uZ
+      POSTGRES_USER: jeff
+      POSTGRES_DB: postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  server:
+    hostname: server
+    image: debate/server
+    depends_on:
+      - db
+    ports:
+      - "4001:4001"
+  web:
+    image: debate/web
+    hostname: web
+    ports:
+      - "3000:3000"
