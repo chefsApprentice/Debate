@@ -1,6 +1,10 @@
 FROM node
 WORKDIR /app
-copy package.json ./
+COPY package.json ./
 RUN npm install --force
 COPY . /app
+
+ENV NODE_ENV production
+EXPOSE 4001
 CMD npm run start
+USER node

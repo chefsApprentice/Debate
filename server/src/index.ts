@@ -26,6 +26,7 @@ const conn = new DataSource({
   // url: "debate",
   // schema: "debateSchema",
   // url: "localhost:5432",
+  url: <string>process.env.DATABASE_URL!,
   logging: false,
   username: <string>process.env.PG_USERNAME!,
   password: <string>process.env.PG_PASSWORD!,
@@ -54,11 +55,12 @@ const main = async () => {
 
   const app = express();
   // app.options("*", cors());
-  // app.use(
-  //   cors({
-  //     credentials: true,
-  //   })
-  // );
+  app.use(
+    cors({
+      origin: <string>process.env.CORS_ORIGIN!,
+      credentials: true,
+    })
+  );
 
   var whitelist = ["https://studio.apollographql.com", "http://localhost:3000"];
   var corsOptions = {
