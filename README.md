@@ -1,6 +1,6 @@
 # Debate
 
-A debate social media full stack app, amde for the IB diploma.
+A debate social media full stack app, made for the IB diploma.
 Made inorder to create and reply to debates.
 
 Uses javascript, typescript, tailwind, Graphql and Nodejs.
