@@ -1,5 +1,6 @@
 FROM node
-COPY . /app
 WORKDIR /app
+COPY package.json ./
 RUN npm install --force
+COPY . /app
 CMD npm run start
