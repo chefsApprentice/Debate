@@ -50,4 +50,5 @@ npm install
 npm run start
 
 ```
-
+*Reference*
+Ben Awad as this was heavily influenced by his full stack tutorial.
