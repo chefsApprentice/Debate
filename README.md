@@ -2,8 +2,9 @@
 
 A debate social media full stack app, made for the IB diploma.
 Made inorder to create and reply to debates.
-
 Uses javascript, typescript, tailwind, Graphql and Nodejs.
+
+Documentation available [here](/Documentation)
 
 ![Image of the debate app on desktop](https://github.com/chefsApprentice/Debate/blob/main/githubPreview/debate.PNG)
 
